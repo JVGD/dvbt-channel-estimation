@@ -6,13 +6,13 @@ use ieee.numeric_std.all;
 entity bloque_3 is
 
     port(
-        data_in  : in std_logic_vector(23 downto 0);    -- [Re(23,12), Im(11,0)]
-        valid_in : in std_logic;                        -- 1 if data_in is ready
-        clk      : in std_logic;
-        rst      : in std_logic;
-        data_out : out std_logic_vector(23 downto 0);    -- [Re(23,12), Im(11,0)]
-        addr_out : out std_logic_vector(10 downto 0);    -- 11b = 2^(11) = 2408 addrs
-        write_en : out std_logic
+        data_in_b3  : in std_logic_vector(23 downto 0);    -- [Re(23,12), Im(11,0)]
+        valid_in_b3 : in std_logic;                        -- 1 if data_in is ready
+        clk_b3      : in std_logic;
+        rst_b3      : in std_logic;
+        data_out_b3 : out std_logic_vector(23 downto 0);    -- [Re(23,12), Im(11,0)]
+        addr_out_b3 : out std_logic_vector(10 downto 0);    -- 11b = 2^(11) = 2408 addrs
+        write_en_b3 : out std_logic
         );
 
 end bloque_3;
@@ -37,10 +37,10 @@ architecture behavioral of bloque_3 is
 
 begin
 
-    comb: process(valid_in, addr)
+    comb: process(valid_in_b3, addr, data_in_b3)
     begin
 
-        if (valid_in = '1') then
+        if (valid_in_b3 = '1') then
             -- Asserting we're
             -- doing things ok
             assert ( NOT( unsigned(addr) >= 1706 ) ) 
@@ -48,7 +48,7 @@ begin
             severity failure;
             
             -- Fetching data
-            p_data <= data_in;
+            p_data <= data_in_b3;
             
             -- Increment addr
             -- to write
@@ -80,22 +80,22 @@ begin
     end process;
     
     
-    sync : process(rst, clk)
+    sync : process(rst_b3, clk_b3)
     begin
     
-        if (rst = '1') then
-            addr_out <= (others=>'0');
-            write_en <= '0';
-            data_out <= (others=>'0');
+        if (rst_b3 = '1') then
+            addr_out_b3 <= (others=>'0');
+            write_en_b3 <= '0';
+            data_out_b3 <= (others=>'0');
             
-        elsif (rising_edge(clk)) then
-            addr     <= p_addr;
-            addr_out <= p_addr;
+        elsif (rising_edge(clk_b3)) then
+            addr        <= p_addr;
+            addr_out_b3 <= p_addr;
 
-            data     <= p_data;
-            data_out <= p_data;
+            data        <= p_data;
+            data_out_b3 <= p_data;
             
-            write_en <= p_write_en;
+            write_en_b3 <= p_write_en;
             
         end if;
         

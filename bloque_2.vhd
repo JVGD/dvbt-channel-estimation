@@ -6,9 +6,10 @@ use work.vhdl_verification.all;
 
 entity bloque_2 is
     port(
-        data_in : out std_logic_vector(23 downto 0);    -- [Re(23,12), Im(11,0)]
-        valid   : out std_logic;                        -- 1 if data_in is ready
-        clk     : out std_logic
+        data_b2     : out std_logic_vector(23 downto 0);    -- [Re(23,12), Im(11,0)]
+        valid_b2    : out std_logic;                        -- 1 if data_in is ready
+        clk_b2      : out std_logic;
+        rst_b2      : out std_logic
         );
 end bloque_2;
 
@@ -53,7 +54,7 @@ architecture behavioral of bloque_2 is
     -- Signals for Clock Manager
     -- No inicializamos rst y clk porque son out
     constant clk_period : time := 10 ns;
-    signal rst : std_logic;
+    signal s_rst : std_logic;
     signal s_clk : std_logic := '1';
     signal endsim : std_logic := '0';    -- esta es IN para manejar el clk
 
@@ -69,7 +70,7 @@ begin
         port map (
             endsim => endsim,
             clk => s_clk,
-            rst => rst
+            rst => s_rst
             );
     
     -- Data Gen
@@ -80,19 +81,20 @@ begin
             STIMULI_FILE             => "symbOFDM.txt",   --! File where data is stored
             STIMULI_NIBBLES          => 6,                --! Number of hex chars in the line of the data file
             DATA_WIDTH               => 24,               --! Width of generated data = STIM_NIBB * 4hex
-            THROUGHPUT               => 4,                --! Output 1 valid data each THROUGHPUT cycles
+            THROUGHPUT               => 2,                --! Output 1 valid data each THROUGHPUT cycles
             INVALID_DATA             => keep,             --! Output value when data is not valid
             CYCLES_AFTER_LAST_VECTOR => 300)              --! Number of cycles between last data and assertion of endsim
         port map(
-            clk       => s_clk,                             --! Align generated data to this clock
-            can_write => '1',                             --! Active high, tells datagen it can assert valid. Use for control-flow
-            data      => data_in, 						  --! Generated data
-            valid     => valid,                           --! Active high, indicates data is valid
+            clk       => s_clk,                           --! Align generated data to this clock
+            can_write => not(s_rst),                             --! Active high, tells datagen it can assert valid. Use for control-flow
+            data      => data_b2, 						  --! Generated data
+            valid     => valid_b2,                        --! Active high, indicates data is valid
             endsim    => endsim                           --! Active high, tells the other simulation processes to close their open files
             );
 
     -- Outputing the CLK for the rest of the blocks
-    clk <= s_clk;
+    clk_b2 <= s_clk;
+    rst_b2 <= s_rst;
 
 end behavioral;
 

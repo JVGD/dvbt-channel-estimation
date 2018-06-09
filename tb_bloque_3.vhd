@@ -10,13 +10,13 @@ architecture behavior of tb_bloque_3 is
     -- component declaration for the unit under test (uut)
     component bloque_3
         port(
-            data_in     : in std_logic_vector(23 downto 0);
-            valid_in    : in std_logic;
-            clk         : in std_logic;
-            rst         : in std_logic;
-            data_out    : out std_logic_vector(23 downto 0);
-            addr_out    : out std_logic_vector(10 downto 0);
-            write_en    : out std_logic
+            data_in_b3  : in std_logic_vector(23 downto 0);    -- [Re(23,12), Im(11,0)]
+            valid_in_b3 : in std_logic;                        -- 1 if data_in is ready
+            clk_b3      : in std_logic;
+            rst_b3      : in std_logic;
+            data_out_b3 : out std_logic_vector(23 downto 0);    -- [Re(23,12), Im(11,0)]
+            addr_out_b3 : out std_logic_vector(10 downto 0);    -- 11b = 2^(11) = 2408 addrs
+            write_en_b3 : out std_logic
             );
     end component;
 
@@ -70,15 +70,17 @@ begin
     -- instantiate the unit under test (uut)
     uut: bloque_3 
         port map (
-            data_in  => data_in,
-            data_out => data_out,
-            valid_in => valid_in,
-            clk => clk,
-            rst => rst,
-            addr_out => addr_out,
-            write_en => write_en
+            data_in_b3  => data_in,
+            data_out_b3 => data_out,
+            valid_in_b3 => valid_in,
+            clk_b3 => clk,
+            rst_b3 => rst,
+            addr_out_b3 => addr_out,
+            write_en_b3 => write_en
             );
-
+            
+            
+            
     -- stimulus process
     stim_proc: process
     begin		

@@ -18,7 +18,7 @@ architecture behavior of tb_bloques_23 is
             addr_out_b3 : out std_logic_vector(10 downto 0);    -- 11b = 2^(11) = 2408 addrs
             write_en_b3 : out std_logic
             );
-    end component;
+        end component;
     
     -- component declaration
     component bloque_2

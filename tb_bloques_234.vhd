@@ -26,7 +26,8 @@ architecture behavior of tb_bloques_234 is
             rst_b3      : in std_logic;
             data_out_b3 : out std_logic_vector(23 downto 0);    -- [Re(23,12), Im(11,0)]
             addr_out_b3 : out std_logic_vector(10 downto 0);    -- 11b = 2^(11) = 2408 addrs
-            write_en_b3 : out std_logic
+            write_en_b3 : out std_logic;
+            write_fin_b3 : out std_logic
             );
         end component;
     
@@ -60,6 +61,7 @@ architecture behavior of tb_bloques_234 is
     
     signal addr_b45 : std_logic_vector(10 downto 0);
     signal data_b45 : std_logic_vector(23 downto 0);
+    signal write_fin_b3 : std_logic;
 
 
 begin
@@ -79,13 +81,14 @@ begin
     -- instantiate the unit under test (uut)
     uut_bloque_3: bloque_3 
         port map (
-            data_in_b3  => data_b23,
-            valid_in_b3 => valid_b23,
-            addr_out_b3 => addr_b34,
-            data_out_b3 => data_b34,
-            write_en_b3 => write_en_b34,
-            clk_b3      => clk,
-            rst_b3      => rst
+            data_in_b3   => data_b23,
+            valid_in_b3  => valid_b23,
+            addr_out_b3  => addr_b34,
+            data_out_b3  => data_b34,
+            write_en_b3  => write_en_b34,
+            clk_b3       => clk,
+            rst_b3       => rst,
+            write_fin_b3 => write_fin_b3
             );
 
     -- instantiate the unit under test (uut)

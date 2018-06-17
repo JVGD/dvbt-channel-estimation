@@ -12,7 +12,8 @@ entity bloque_3 is
         rst_b3      : in std_logic;
         data_out_b3 : out std_logic_vector(23 downto 0);    -- [Re(23,12), Im(11,0)]
         addr_out_b3 : out std_logic_vector(10 downto 0);    -- 11b = 2^(11) = 2408 addrs
-        write_en_b3 : out std_logic
+        write_en_b3 : out std_logic;
+        write_fin_b3 : out std_logic
         );
 
 end bloque_3;
@@ -34,15 +35,18 @@ architecture behavioral of bloque_3 is
     
     -- If firt time write on addr = 0x000000...
     signal is_first_time : std_logic := '1';
+    
+    -- To singaling end of memory writing
+    signal p_end_cont : std_logic := '0';
+    signal end_cont : std_logic := '0';
 
 begin
 
-    comb: process(valid_in_b3, addr, data_in_b3)
+    comb: process(valid_in_b3, addr, data_in_b3, end_cont)
     begin
 
-        if (valid_in_b3 = '1') then
-            -- Asserting we're
-            -- doing things ok
+        if ((valid_in_b3 = '1') and (end_cont = '0')) then
+            -- Asserting we're doing things ok
             assert ( NOT( unsigned(addr) >= 1706 ) ) 
             report " bloque_2 : addr cont overflow, writting more than 1705 symbols in RAM?" 
             severity failure;
@@ -50,31 +54,37 @@ begin
             -- Fetching data
             p_data <= data_in_b3;
             
-            -- Increment addr
-            -- to write
+            -- Increment addr to write
             if (is_first_time ='1') then    -- First time we write
                 is_first_time <= '0';       -- in addr = 0
                 p_addr <= addr;
+                
             else
                 p_addr <= std_logic_vector(unsigned(addr) + 1);
+                
             end if;
-            -- We'll write RAM
-            -- on next clk cycle
+            
+            -- We'll write RAM on next clk cycle
             p_write_en <= '1';
         
         else
             -- Do not fetch data
             p_data <= data;
         
-            -- Do not increment
-            -- write address
+            -- Do not increment write address
             p_addr <= addr;
             
-            -- Do not write (no
-            -- valid data)
+            -- Do not write (no valid data)
             p_write_en <= '0';
             
             
+        end if;
+        
+        -- Controlling the end of the simulation
+        -- If written one OFDM symbol
+        if ( unsigned(addr) = 1704 ) then
+            p_write_en <= '0';
+            p_end_cont <= '1';
         end if;
     
     end process;
@@ -89,13 +99,14 @@ begin
             data_out_b3 <= (others=>'0');
             
         elsif (rising_edge(clk_b3)) then
-            addr        <= p_addr;
-            addr_out_b3 <= p_addr;
-
-            data        <= p_data;
-            data_out_b3 <= p_data;
+            addr         <= p_addr;
+            addr_out_b3  <= p_addr;
+            data         <= p_data;
+            data_out_b3  <= p_data;
+            write_en_b3  <= p_write_en;
+            end_cont     <= p_end_cont;
+            write_fin_b3 <= p_end_cont;
             
-            write_en_b3 <= p_write_en;
             
         end if;
         

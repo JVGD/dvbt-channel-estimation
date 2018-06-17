@@ -25,7 +25,7 @@ architecture behavior of tb_bloque_6 is
     end component;
     
     -- PRBS
-    component prbs
+    component bloque_5
         port(
             clk   : in std_logic;	--clock
             rst : in std_logic;	    --reset
@@ -62,7 +62,7 @@ architecture behavior of tb_bloque_6 is
 begin
  
 	-- instantiate the unit under test (uut)
-    uut: bloque_6 
+    bloque_6_memwrite : bloque_6 
         port map (
             clk_b6  => clk,
             rst_b6  => rst,
@@ -75,7 +75,7 @@ begin
             );
             
     -- Clock manager instance
-    clk_mng : clkmanager
+    bloque_1_clk : clkmanager
         generic map(
             clk_period => 10 ns,
             rst_active_value => '1',
@@ -87,7 +87,7 @@ begin
             );
             
 	--Instantiation of component
-	prbs_bloque : prbs
+	bloque_5_prbs : bloque_5
         port map(
             clk   => clk,
             rst => rst,

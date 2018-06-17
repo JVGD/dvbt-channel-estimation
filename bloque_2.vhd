@@ -62,7 +62,7 @@ architecture behavioral of bloque_2 is
 begin
 
     -- Clock manager instance
-    clk_mng : clkmanager
+    bloque_1_clk : clkmanager
         generic map(
             clk_period => clk_period,
             rst_active_value => '1',
@@ -74,7 +74,7 @@ begin
             );
     
     -- Data Gen
-    data_gen : datagen
+    bloque_1_datagen : datagen
         generic map(
             VERBOSE                  => false,            --! Print more internal details
             DEBUG                    => false,            --! Print debug info (developers only)

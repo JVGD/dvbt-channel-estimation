@@ -9,9 +9,10 @@ architecture tb_prbs_1 of tb_prbs is
     -- Declaramos componente
     component prbs
         port(
-            clk      : in std_logic;			--clock
-            reset    : in std_logic;	--reset
-            Yout     : out std_logic	--randomized output
+            clk   : in std_logic;	--clock
+            rst : in std_logic;	--reset
+            Yout  : out std_logic;	--randomized output
+            valid : out std_logic
             );
             
     end component;  
@@ -38,14 +39,16 @@ architecture tb_prbs_1 of tb_prbs is
     -- No inicializamos rst y clk porque son out
     signal rst : std_logic;
     signal clk : std_logic := '1';
+    signal valid : std_logic;
 
 begin
 	--Instantiation of component
 	prbs_bloque : prbs
         port map(
-            clk    => clk,
-            reset  => rst,
-            Yout   => Yout(0)		
+            clk   => clk,
+            rst => rst,
+            Yout  => Yout(0),
+            valid => valid
         );
 	
     -- Clock manager instance

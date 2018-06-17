@@ -55,7 +55,7 @@ architecture behavior of tb_bloques_234 is
 
     --outputs
     signal addr_b34 : std_logic_vector(10 downto 0);
-    signal write_en_b34 : std_logic_vector(0 downto 0);
+    signal write_en_b34 : std_logic;
     signal data_b34 : std_logic_vector(23 downto 0);
     
     signal addr_b45 : std_logic_vector(10 downto 0);
@@ -68,7 +68,7 @@ begin
     uut: bloque_4 
         port map (
             clka  => clk,
-            wea   => write_en_b34,
+            wea(0)   => write_en_b34,
             addra => addr_b34,
             dina  => data_b34,
             clkb  => clk,
@@ -83,7 +83,7 @@ begin
             valid_in_b3 => valid_b23,
             addr_out_b3 => addr_b34,
             data_out_b3 => data_b34,
-            write_en_b3 => write_en_b34(0),
+            write_en_b3 => write_en_b34,
             clk_b3      => clk,
             rst_b3      => rst
             );

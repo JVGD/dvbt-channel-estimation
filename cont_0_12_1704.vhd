@@ -19,13 +19,23 @@ architecture behavioral of cont_0_12_1704 is
     signal cont : std_logic_vector(10 downto 0) := (others => '0');
     signal p_cont : std_logic_vector(10 downto 0) := (others => '0');
     signal p_cont_ended : std_logic := '0';
+    signal s_cont_ended : std_logic := '0';
+    signal stop_count : std_logic := '0';
+    signal p_stop_count : std_logic := '0';
     
-begin
+begin   
 
     comb : process(cont, rst, enable)
     begin
         if ((rst = '0') and (enable = '1')) then
-            p_cont <= std_logic_vector(unsigned(cont) + 12);            
+            if (stop_count = '0') then
+                p_cont <= std_logic_vector(unsigned(cont) + 12);            
+            end if;
+            
+            if (unsigned(cont) = 1692) then
+                p_stop_count <= '1';
+            end if;
+            
             if (unsigned(cont) = 1704) then
                 p_cont_ended <= '1';
             end if;
@@ -45,6 +55,8 @@ begin
             cont <= p_cont;
             counter <= p_cont;
             cont_ended <= p_cont_ended;
+            s_cont_ended <= p_cont_ended;
+            stop_count <= p_stop_count;
         
         end if;
     

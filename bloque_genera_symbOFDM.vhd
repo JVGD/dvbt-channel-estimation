@@ -2,10 +2,19 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
  
-entity tb_bloques_234 is
-end tb_bloques_234;
+entity bloque_genera_symbOFDM is
+    
+    port(
+        clk         : out std_logic;
+        rst         : out std_logic;
+        addr_symb   : in  std_logic_vector(10 downto 0);
+        data_symb   : out std_logic_vector(23 downto 0);
+        symb_ready  : out std_logic
+        );
+
+end bloque_genera_symbOFDM;
  
-architecture behavior of tb_bloques_234 is 
+architecture behavior of bloque_genera_symbOFDM is 
  
      -- component declaration
     component bloque_2
@@ -42,13 +51,13 @@ architecture behavior of tb_bloques_234 is
         addrb : in  std_logic_vector(10 downto 0);
         doutb : out  std_logic_vector(23 downto 0)
         );
-        end component;
+    end component;
     
     -- Signals for Clock Manager
     -- We do not initializa rst
     -- and clk because they are out
-    signal rst : std_logic;
-    signal clk : std_logic;
+    signal s_rst : std_logic;
+    signal s_clk : std_logic;
     
     --inputs
     signal valid_b23 : std_logic := '0';
@@ -59,23 +68,18 @@ architecture behavior of tb_bloques_234 is
     signal write_en_b34 : std_logic;
     signal data_b34 : std_logic_vector(23 downto 0);
     
-    signal addr_b45 : std_logic_vector(10 downto 0);
-    signal data_b45 : std_logic_vector(23 downto 0);
-    signal write_fin_b3 : std_logic;
-
-
 begin
  
     -- instantiate the unit under test (uut)
     uut: bloque_4 
         port map (
-            clka  => clk,
-            wea(0)   => write_en_b34,
+            clka  => s_clk,
+            wea(0) => write_en_b34,
             addra => addr_b34,
             dina  => data_b34,
-            clkb  => clk,
-            addrb => addr_b45,
-            doutb => data_b45
+            clkb  => s_clk,
+            addrb => addr_symb,
+            doutb => data_symb
             );
  
     -- instantiate the unit under test (uut)
@@ -86,9 +90,9 @@ begin
             addr_out_b3  => addr_b34,
             data_out_b3  => data_b34,
             write_en_b3  => write_en_b34,
-            clk_b3       => clk,
-            rst_b3       => rst,
-            write_fin_b3 => write_fin_b3
+            clk_b3       => s_clk,
+            rst_b3       => s_rst,
+            write_fin_b3 => symb_ready
             );
 
     -- instantiate the unit under test (uut)
@@ -96,9 +100,13 @@ begin
         port map(
             data_b2     => data_b23,
             valid_b2    => valid_b23,
-            clk_b2      => clk,
-            rst_b2      => rst
+            clk_b2      => s_clk,
+            rst_b2      => s_rst
             );
             
+    -- Concurrent sequences
+    rst <= s_rst;
+    clk <= s_clk;
+
 
 end;

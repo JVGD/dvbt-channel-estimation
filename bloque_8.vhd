@@ -9,7 +9,10 @@ entity bloque_8 is
         rst         : in std_logic;
         addr_symb   : out std_logic_vector(10 downto 0);
         data_symb   : in std_logic_vector(23 downto 0);
-        symb_ready  : in std_logic
+        symb_ready  : in std_logic;
+        addr_pilot  : out std_logic_vector(10 downto 0);
+        data_pilot  : in std_logic_vector(23 downto 0);
+        pilot_ready : in std_logic
         );
 
 end bloque_8;
@@ -28,30 +31,43 @@ architecture behavioral of bloque_8 is
     
     signal p_cont_ena   : std_logic := '0';
     signal cont_ena     : std_logic := '0';
-    signal symb_readed  : std_logic := '0';
---    signal p_valid      : std_logic := '0';
---    signal valid        : std_logic :='0';
+    
+    signal addr_data : std_logic_vector(10 downto 0);
+    signal data_readed  : std_logic := '0';
+    
+    signal p_data_valid : std_logic := '0'; 
+    signal data_valid : std_logic := '0';
         
 begin
 
-    -- UUT
+    -- counter
     counter_0_12_1704 : cont_0_12_1704
         port map(
             clk => clk,
             rst => rst,
             enable => cont_ena,
-            counter => addr_symb,
-            cont_ended => symb_readed
+            counter => addr_data,
+            cont_ended => data_readed
             );
 
-    comb : process(rst, symb_ready)
+    comb : process(rst, symb_ready, pilot_ready, cont_ena, data_readed)
     begin
-        if ((rst = '0') and (symb_ready = '1')) then
+        if ((rst = '0') and (symb_ready = '1') and (pilot_ready = '1')) then
             p_cont_ena <= '1';
         end if;
         
+        if((symb_ready = '1') and (pilot_ready = '1') and (cont_ena = '1')) then
+            if (data_readed = '1') then
+                p_data_valid <= '0';
+                p_cont_ena <= '0';
+            else
+                p_data_valid <= '1';
+            end if;
+        end if;
+        
+        
+        
     end process comb;
-
 
     sync : process(rst, clk)
     begin
@@ -61,9 +77,14 @@ begin
             
         elsif (rising_edge(clk)) then
             cont_ena <= p_cont_ena;
+            data_valid <= p_data_valid;
             
         end if;
     
     end process sync;
+    
+    -- Concurrent
+    addr_symb <= addr_data;
+    addr_pilot <= addr_data;
 
 end behavioral;

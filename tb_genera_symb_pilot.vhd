@@ -2,23 +2,23 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
  
-entity tb_bloque_genera_sybm_pilot is
-end tb_bloque_genera_sybm_pilot;
+entity bloque_genera_sybm_pilot_tb is
+end bloque_genera_sybm_pilot_tb;
  
-architecture behavior of tb_bloque_genera_sybm_pilot is 
+architecture behavior of bloque_genera_sybm_pilot_tb is 
      
     -- component declaration
     component bloque_8
-        port(
-            clk         : in std_logic;
-            rst         : in std_logic;
-            addr_symb   : out std_logic_vector(10 downto 0);
-            data_symb   : in std_logic_vector(23 downto 0);
-            symb_ready  : in std_logic;
-            addr_pilot  : out std_logic_vector(10 downto 0);
-            data_pilot  : in std_logic_vector(23 downto 0);
-            pilot_ready : in std_logic
-            );
+		port(
+			clk         : in std_logic;
+			rst         : in std_logic;
+			addr_symb   : out std_logic_vector(10 downto 0);
+			data_symb   : in std_logic_vector(23 downto 0);
+			symb_ready  : in std_logic;
+			addr_pilot  : out std_logic_vector(10 downto 0);
+			data_pilot  : in std_logic_vector(23 downto 0);
+			pilot_ready : in std_logic
+			);
         end component;
         
     component bloque_genera_symbOFDM

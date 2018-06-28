@@ -8,6 +8,11 @@ package mi_paquete is
         re	: std_logic_vector (11 downto 0);
         im	: std_logic_vector (11 downto 0);
     end record;
+	
+	type complex24 is record
+        re	: std_logic_vector (23 downto 0);
+        im	: std_logic_vector (23 downto 0);
+    end record;
     
     -- For function
     type complex16 is record

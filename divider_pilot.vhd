@@ -6,8 +6,8 @@ use work.mi_paquete.all;
 entity divider_pilot is
 	port(
 		pilot_signed : in std_logic;
-		pilot_rx : in std_logic_vector(11 downto 0);
-		pilot_eq : out std_logic_vector(11 downto 0)
+		pilot_rx : in complex12;
+		pilot_eq : out complex12
 	);
 end divider_pilot;
 
@@ -16,19 +16,25 @@ architecture behavioral of divider_pilot is
 	-- pilot / (4/3) = pilot * 3/4 = pilot * 0.75
 	constant pilot_neg : std_logic_vector(11 downto 0):= "111111110100"; -- -0.75
 	constant pilot_pos : std_logic_vector(11 downto 0):= "000000001100"; --  0.75
-	signal result : std_logic_vector(23 downto 0):= (others=>'0');
+	
+	signal result : complex24 := (re => (others=>'0'), im => (others=>'0'));
 	
 begin
 	comb: process(pilot_rx, pilot_signed)
 	begin
 		if(pilot_signed = '1') then -- if signed is negative pilot
-			result <= std_logic_vector( signed(pilot_rx) * signed(pilot_neg) );
+			result.re <= std_logic_vector( signed(pilot_rx.re) * signed(pilot_neg) );
+			result.im <= std_logic_vector( signed(pilot_rx.im) * signed(pilot_neg) );
+		
 		elsif(pilot_signed = '0') then -- if not siged is positive pilot
-			result <= std_logic_vector( signed(pilot_rx) * signed(pilot_pos) );
+			result.re <= std_logic_vector( signed(pilot_rx.re) * signed(pilot_pos) );
+			result.im <= std_logic_vector( signed(pilot_rx.im) * signed(pilot_pos) );
+		
 		end if;
 	end process;
 	
-	pilot_eq <= result(15 downto 4); -- taking central part only
+	pilot_eq.re <= result.re(15 downto 4); -- taking central part only
+	pilot_eq.im <= result.im(15 downto 4); -- taking central part only
 	
 end behavioral;
 

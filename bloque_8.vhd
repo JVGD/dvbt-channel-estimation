@@ -1,6 +1,7 @@
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
+use work.mi_paquete.all;
 
 entity bloque_8 is
 
@@ -12,7 +13,9 @@ entity bloque_8 is
         symb_ready  : in std_logic;
         addr_pilot  : out std_logic_vector(10 downto 0);
         data_pilot  : in std_logic_vector(23 downto 0);
-        pilot_ready : in std_logic
+        pilot_ready : in std_logic;
+		pilot_rx 	: out complex12;
+		pilot_tx_signed : out std_logic
         );
 
 end bloque_8;
@@ -39,6 +42,15 @@ architecture behavioral of bloque_8 is
     signal data_valid : std_logic := '0';
         
 begin
+
+	-- TODO: TEST THIS
+	-- Wiring input pilot rx (data_symb) to pilot_rx_out
+	pilot_rx.re <= data_symb(23 downto 12);
+	pilot_rx.im <= data_symb(11 downto 0);
+	
+	-- Wiring as well the sign bit to the pilot_tx_signed
+	pilot_tx_signed <= data_pilot(23);
+	
 
     -- counter
     counter_0_12_1704 : cont_0_12_1704

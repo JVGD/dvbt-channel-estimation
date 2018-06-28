@@ -2,10 +2,10 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
  
-entity tb_bloque_genera_pilots is
-end tb_bloque_genera_pilots;
+entity bloque_genera_pilots_tb is
+end bloque_genera_pilots_tb;
  
-architecture behavior of tb_bloque_genera_pilots is 
+architecture behavior of bloque_genera_pilots_tb is 
  
      -- component declaration
     component bloque_8

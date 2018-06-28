@@ -1,0 +1,64 @@
+INFO:sim:172 - Generating IP...
+Customizing IP...
+Release 14.7 - Xilinx CORE Generator IP GUI Launcher P.20160913 (lin64)
+Copyright (c) 1995-2013 Xilinx, Inc.  All rights reserved.
+Finished Customizing.
+Generating IP...
+WARNING:sim:471 - The chosen IP does not support a VHDL behavioral model,
+   generating a VHDL structural model instead.
+XST: HDL Parsing
+XST: HDL Elaboration
+XST: HDL Synthesis
+XST: Advanced HDL Synthesis
+XST: Low Level Synthesis
+XST: Partition Report
+XST: Design Summary
+Generating Implementation files.
+Generating NGC file.
+Generating VHDL structural model.
+Finished Generation.
+Generating IP instantiation template...
+Generating ASY schematic symbol...
+INFO:sim:949 - Finished generation of ASY schematic symbol.
+Generating SYM schematic symbol for 'div12'...
+Generating metadata file...
+Generating ISE project...
+XCO file found: div12.xco
+XMDF file found: div12_xmdf.tcl
+Adding
+/home/ise/project_EDC/dvbt-channel-estimation/ipcore_dir/tmp/_cg/div12.asy -view
+all -origin_type imported
+Adding
+/home/ise/project_EDC/dvbt-channel-estimation/ipcore_dir/tmp/_cg/div12.ngc -view
+all -origin_type created
+Checking file
+"/home/ise/project_EDC/dvbt-channel-estimation/ipcore_dir/tmp/_cg/div12.ngc" for
+project device match ...
+File
+"/home/ise/project_EDC/dvbt-channel-estimation/ipcore_dir/tmp/_cg/div12.ngc"
+device information matches project device.
+Adding
+/home/ise/project_EDC/dvbt-channel-estimation/ipcore_dir/tmp/_cg/div12.sym -view
+all -origin_type imported
+Adding
+/home/ise/project_EDC/dvbt-channel-estimation/ipcore_dir/tmp/_cg/div12.vhd -view
+all -origin_type created
+INFO:HDLCompiler:1061 - Parsing VHDL file
+   "/home/ise/project_EDC/dvbt-channel-estimation/ipcore_dir/tmp/_cg/div12.vhd"
+   into library work
+INFO:ProjectMgmt - Parsing design hierarchy completed successfully.
+Adding
+/home/ise/project_EDC/dvbt-channel-estimation/ipcore_dir/tmp/_cg/div12.vho -view
+all -origin_type imported
+INFO:TclTasksC:2116 - The automatic calculation of top has been turned-off.
+   Please set the new top explicitly by running the "project set top" command.
+   To re-calculate the new top automatically, set the "Auto Implementation Top"
+   property to true.
+Top level has been set to "/div12"
+Generating README file...
+Generating FLIST file...
+INFO:sim:948 - Finished FLIST file generation.
+Launching README viewer...
+Moving files to output directory...
+Finished moving files to output directory
+Wrote CGP file for project 'div12'.

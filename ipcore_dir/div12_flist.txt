@@ -1,0 +1,13 @@
+# Output products list for <div12>
+_xmsgs/pn_parser.xmsgs
+div12.asy
+div12.gise
+div12.ngc
+div12.sym
+div12.vhd
+div12.vho
+div12.xco
+div12.xise
+div12_flist.txt
+div12_readme.txt
+div12_xmdf.tcl

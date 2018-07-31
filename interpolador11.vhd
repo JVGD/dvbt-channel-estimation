@@ -14,11 +14,13 @@ entity interpolador11 is
     port(
         clk         : in std_logic;
         rst         : in std_logic;
+		finished	: out std_logic;
         sup         : in complex12;
         inf         : in complex12;
         valid       : in std_logic;
         estim       : out complex12; 
-        estim_valid : out std_logic);
+        estim_valid : out std_logic
+		);
 end interpolador11;
 
 architecture Behavioral of interpolador11 is
@@ -47,7 +49,9 @@ architecture Behavioral of interpolador11 is
     
     -- Se declara sestim porque estim se necesita y no es inout
     signal sestim   : complex12 := (re => (others=>'0'), im => (others=>'0'));
-    
+	
+	-- Seal para indicar si acepta nuevos datos (ha terminado la interpolacion) o no
+    signal p_finished : std_logic := '1';
     
     -- componentes
     component miROM
@@ -70,18 +74,20 @@ begin
     comb : process(estado, valid, ssup, sinf, sdata, saddr, inf, sup, p_estim, sestim)
     begin
         case estado is
-            when reposo =>
+            when reposo =>			
                 -- si valid guardas seales y empezar FSM
                 if (valid ='1') then
                     p_sinf <= inf;
                     p_ssup <= sup;
                     p_estado <= espera;
                     p_saddr <=(others=>'0');
+					p_finished <= '0';
                 else
                     p_estado <= reposo;
                     p_sinf <= sinf;
                     p_ssup <= ssup;
                     p_saddr <= saddr;
+					p_finished <= '1';
                     -- no se puede inicializar a 0
                     -- porque sino nos cargamos el 
                     -- ultimo estim_valid porque coincidiria
@@ -152,7 +158,8 @@ begin
             estim <= p_estim;
             sestim <= p_estim;
             sinf <= p_sinf;
-            ssup <= p_ssup;        
+            ssup <= p_ssup;
+			finished <= p_finished;
         end if;
     end process sinc;
 

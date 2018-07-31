@@ -14,6 +14,7 @@ architecture behavior of interpolador11_tb is
 		port(
 			clk         : in std_logic;
 			rst         : in std_logic;
+			finished	: out std_logic;
 			sup         : in complex12;
 			inf         : in complex12;
 			valid       : in std_logic;
@@ -21,7 +22,7 @@ architecture behavior of interpolador11_tb is
 			estim_valid : out std_logic
 			);
 		end component;
-		
+				
 	-- clkmanager component
     component clkmanager is
         generic (
@@ -45,7 +46,8 @@ architecture behavior of interpolador11_tb is
 
 	--outputs
 	signal estim : complex12 := (re => (others=>'0'), im => (others=>'0'));
-	signal estim_valid : std_logic;
+	signal estim_valid : std_logic := '0';
+	signal finished	: std_logic;
 
 begin
 

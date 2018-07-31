@@ -1,14 +1,97 @@
 library ieee;
 use ieee.std_logic_1164.all;
-use ieee.numeric_std.all;
 use work.mi_paquete.all;
+use ieee.numeric_std.all;
+
+entity estimador is
+end estimador;
+
+architecture behavioral of estimador is
+
+     -- Block for reading data from file
+	 -- and clock generation
+    component bloque_2
+        port(
+            data_b2     : out std_logic_vector(23 downto 0);    -- [Re(23,12), Im(11,0)]
+            valid_b2    : out std_logic;                        -- 1 if data_in is ready
+            clk_b2      : out std_logic;
+            rst_b2      : out std_logic
+            );
+        end component;
  
-entity bloque_genera_sybms_and_pilots_tb is
-end bloque_genera_sybms_and_pilots_tb;
+    -- Block for writing the generated data
+	-- into the Dual Port RAM
+    component bloque_3
+        port(
+            data_in_b3  : in std_logic_vector(23 downto 0);    -- [Re(23,12), Im(11,0)]
+            valid_in_b3 : in std_logic;                        -- 1 if data_in is ready
+            clk_b3      : in std_logic;
+            rst_b3      : in std_logic;
+            data_out_b3 : out std_logic_vector(23 downto 0);    -- [Re(23,12), Im(11,0)]
+            addr_out_b3 : out std_logic_vector(10 downto 0);    -- 11b = 2^(11) = 2408 addrs
+            write_en_b3 : out std_logic;
+            write_fin_b3 : out std_logic
+            );
+        end component;
+    
+    -- Dual Port RAM where OFDM Symbol (input
+	-- data) is stored
+    component bloque_4
+		port(
+			clka  : in  std_logic;
+			wea   : in  std_logic_vector(0 downto 0);
+			addra : in  std_logic_vector(10 downto 0);
+			dina  : in  std_logic_vector(23 downto 0);
+			clkb  : in  std_logic;
+			addrb : in  std_logic_vector(10 downto 0);
+			doutb : out  std_logic_vector(23 downto 0)
+			);
+		end component;
+	
+	-- Block implementing the PRBS
+    component bloque_5
+        port(
+            clk   : in std_logic;	--clock
+            rst : in std_logic;	    --reset
+            Yout  : out std_logic;	--randomized output
+            valid : out std_logic
+            );        
+		end component; 
  
-architecture behavior of bloque_genera_sybms_and_pilots_tb is 
-     
-    -- component declaration
+    -- Block for generating pilots out of the results
+	-- of the PRBS and storing it in DPRAM of Block 7
+    component bloque_6
+		port(
+			clk_b6       : in std_logic;
+			rst_b6       : in std_logic;
+			prbs_b6      : in std_logic;
+			valid_b6     : in std_logic;
+			data_out_b6  : out std_logic_vector(23 downto 0);
+			addr_out_b6  : out std_logic_vector(10 downto 0);
+			write_en_b6  : out std_logic;
+			write_fin_b6 : out std_logic
+			);
+		end component;
+    
+	-- Dual Port RAM with the pilots generated
+	-- per symbol (pilots are only in positions 1:12:1705)
+	component bloque_7
+		port(
+			clka : in  std_logic;
+			wea : in  std_logic_vector(0 downto 0);
+			addra : in  std_logic_vector(10 downto 0);
+			dina : in  std_logic_vector(23 downto 0);
+			clkb : in  std_logic;
+			addrb : in  std_logic_vector(10 downto 0);
+			doutb : out  std_logic_vector(23 downto 0)
+			);
+		end component; 
+	
+    -- When DPRAMs with symbols and pilots are ready
+	-- reads it and return the pilot_rx and pilot_tx
+	-- although from pilot_tx it only retur if it is 
+	-- positive or negative since pilots_tx can only
+	-- be +4/3 or -4/3
     component bloque_8
 		port(
 			clk         : in std_logic;
@@ -23,85 +106,132 @@ architecture behavior of bloque_genera_sybms_and_pilots_tb is
 			pilot_tx_signed : out std_logic
 			);
         end component;
-        
-    component bloque_genera_symbOFDM
-        port(
-            clk         : out std_logic;
-            rst         : out std_logic;
-            addr_symb   : in  std_logic_vector(10 downto 0);
-            data_symb   : out std_logic_vector(23 downto 0);
-            symb_ready  : out std_logic
-            );
-        end component;
-        
-    component bloque_genera_pilots
-        port(
-            clk          : in std_logic;
-            rst          : in std_logic;
-            addr_pilots  : in  std_logic_vector(10 downto 0);
-            data_pilots  : out std_logic_vector(23 downto 0);
-            pilots_ready : out std_logic
-            );
-        end component;        
-            
-    signal s_clk : std_logic;
-    signal s_rst : std_logic;
+    
+    -- Signals of synchronism
+    signal rst : std_logic;
+    signal clk : std_logic;
+    
+    -- Signals Block 2 to Block 3
+    signal valid_b23 : std_logic;
+    signal data_b23 : std_logic_vector(23 downto 0);
 
-    signal s_addr_symb : std_logic_vector(10 downto 0) := (others=>'0');
-    signal s_data_symb : std_logic_vector(23 downto 0) := (others=>'0');
-    signal s_symb_ready : std_logic;
+    -- Signals Block 3 to Block 4
+    signal data_b34 : std_logic_vector(23 downto 0);
+	signal addr_b34 : std_logic_vector(10 downto 0);
+    signal write_en_b34 : std_logic;
+    
+	-- Signals Block 3 to Block 8		
+	signal ready_symb_b38 : std_logic;
 
-    signal s_addr_pilot : std_logic_vector(10 downto 0) := (others=>'0');
-    signal s_data_pilot : std_logic_vector(23 downto 0) := (others=>'0');
-    signal s_pilot_ready : std_logic;
+	-- Signals Block 4 to Block 8	
+	signal data_symb_b48 : std_logic_vector(23 downto 0);
+	signal addr_symb_b48 : std_logic_vector(10 downto 0);
+    
+    -- Signals Block 5 to Block 6	
+    signal prbs_b56 : std_logic;
+    signal valid_b56: std_logic;
+    
+    -- Signals Block 6 to Block 7	
+    signal data_b67 : std_logic_vector(23 downto 0);
+    signal addr_b67 : std_logic_vector(10 downto 0);
+    signal write_en_b67 : std_logic;
 	
-	signal pilot_rx : complex12;
-	signal pilot_tx_signed : std_logic;
+	-- Signals Block 6 to Block 8
+	signal ready_pilots_b68 : std_logic;
 	
+	-- Signals Block 7 to Block 8	
+	signal data_pilots_b78 : std_logic_vector(23 downto 0);
+	signal addr_pilots_b78 : std_logic_vector(10 downto 0);
+	
+	-- Signals Block 8 to Block 9
+	signal pilot_tx_signed_b89 : std_logic;
+	signal pilot_rx_b89 : complex12;
+	
+	-- For test bench
 	signal pilot_rx_teo : complex12 := (re => (others=>'0'), im => (others=>'0'));
 	signal pilot_tx_signed_teo : std_logic := '0';
-	
-
 
 begin
- 
-    -- instantiate the unit under test (uut)
-    uut_bloque_8 : bloque_8 
+	
+    uut_bloque_2 : bloque_2
+        port map(
+            data_b2     => data_b23,
+            valid_b2    => valid_b23,
+            clk_b2      => clk,
+            rst_b2      => rst
+            );
+
+    uut_bloque_3: bloque_3 
         port map (
-            clk => s_clk,
-            rst => s_rst,
-            addr_symb => s_addr_symb,
-            data_symb => s_data_symb,
-            symb_ready => s_symb_ready,
-            addr_pilot => s_addr_pilot,
-            data_pilot => s_data_pilot,
-            pilot_ready => s_pilot_ready,
-			pilot_tx_signed => pilot_tx_signed,
-			pilot_rx => pilot_rx
-			);
-            
-     uut_genera_symb : bloque_genera_symbOFDM 
+            data_in_b3   => data_b23,
+            valid_in_b3  => valid_b23,
+            addr_out_b3  => addr_b34,
+            data_out_b3  => data_b34,
+            write_en_b3  => write_en_b34,
+            clk_b3       => clk,
+            rst_b3       => rst,
+            write_fin_b3 => ready_symb_b38
+            );
+
+    uut_bloque_4 : bloque_4 
         port map (
-            clk => s_clk,
-            rst => s_rst,
-            addr_symb => s_addr_symb,
-            data_symb => s_data_symb,
-            symb_ready => s_symb_ready 
+            clka  => clk,
+            wea(0) => write_en_b34,
+            addra => addr_b34,
+            dina  => data_b34,
+            clkb  => clk,
+            addrb => addr_symb_b48,
+            doutb => data_symb_b48
             );
             
-     uut_genera_pilots : bloque_genera_pilots 
+	uut_bloque_5 : bloque_5
+        port map(
+            clk   => clk,
+            rst => rst,
+            Yout  => prbs_b56,
+            valid => valid_b56
+			);       
+            
+	uut_bloque_6 : bloque_6 
         port map (
-            clk => s_clk,
-            rst => s_rst,
-            addr_pilots => s_addr_pilot,
-            data_pilots => s_data_pilot,
-            pilots_ready => s_pilot_ready 
-            );            
-
+            clk_b6  => clk,
+            rst_b6  => rst,
+            prbs_b6 => prbs_b56,
+            valid_b6 => valid_b56,
+            data_out_b6 => data_b67,
+            addr_out_b6 => addr_b67,
+            write_en_b6 => write_en_b67,
+            write_fin_b6 => ready_pilots_b68
+            );
+			
+	bloque_7_DPRAM: bloque_7 
+        port map (
+            clka => clk,
+            dina => data_b67,
+            addra => addr_b67,
+            wea(0) => write_en_b67,
+            clkb => clk,
+            addrb => addr_pilots_b78,
+            doutb => data_pilots_b78
+            );
+ 
+    uut_bloque_8 : bloque_8 
+        port map (
+            clk => clk,
+            rst => rst,
+            addr_symb => addr_symb_b48,
+            data_symb => data_symb_b48,
+            symb_ready => ready_symb_b38,
+            addr_pilot => addr_pilots_b78,
+            data_pilot => data_pilots_b78,
+            pilot_ready => ready_pilots_b68,
+			pilot_tx_signed => pilot_tx_signed_b89,
+			pilot_rx => pilot_rx_b89
+			);
+			
 	-- stimulus process
 	stim_proc: process
 	begin		
-		pilot_tx_signed_teo <= '0';
 		-- hold reset state for 100 ns.
 		wait for 34140 ns;	
 		pilot_tx_signed_teo <= '1'; 
@@ -819,5 +949,8 @@ begin
 		pilot_rx_teo.im <= x"ff6";     -- d"-0.625000" b"111111110110"
 		
 		wait;
-	end process;
-end;
+	end process;			
+
+
+end behavioral;
+

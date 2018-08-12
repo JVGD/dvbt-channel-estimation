@@ -3,15 +3,15 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 use work.mi_paquete.all;
 
-entity divider_pilot is
+entity bloque_9 is
 	port(
 		pilot_signed : in std_logic;
 		pilot_rx : in complex12;
 		pilot_eq : out complex12
 	);
-end divider_pilot;
+end bloque_9;
 
-architecture behavioral of divider_pilot is
+architecture behavioral of bloque_9 is
 	
 	-- pilot / (4/3) = pilot * 3/4 = pilot * 0.75
 	constant pilot_neg : std_logic_vector(11 downto 0):= "111111110100"; -- -0.75

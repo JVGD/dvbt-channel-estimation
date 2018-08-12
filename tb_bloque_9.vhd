@@ -3,14 +3,14 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 use work.mi_paquete.all;
  
-entity divider_pilot_tb is
-end divider_pilot_tb;
+entity bloque_9_tb is
+end bloque_9_tb ;
  
-architecture behavior of divider_pilot_tb is 
+architecture behavior of bloque_9_tb  is 
  
     -- component declaration for the unit under test (uut)
  
-	component divider_pilot
+	component bloque_9
 	port(
 		pilot_signed : in std_logic; -- if pilot tx is signed
 		pilot_rx : in complex12;
@@ -32,7 +32,7 @@ architecture behavior of divider_pilot_tb is
 begin
  
 	-- instantiate the unit under test (uut)
-   uut: divider_pilot port map (
+   uut: bloque_9 port map (
           pilot_signed => pilot_signed,
           pilot_rx => pilot_rx,
           pilot_eq => pilot_eq

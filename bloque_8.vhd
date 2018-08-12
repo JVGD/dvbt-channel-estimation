@@ -15,7 +15,9 @@ entity bloque_8 is
         data_pilot  : in std_logic_vector(23 downto 0);
         pilot_ready : in std_logic;
 		pilot_rx 	: out complex12;
-		pilot_tx_signed : out std_logic
+		pilot_tx_signed : out std_logic;
+		pilot_txrx_fin : out std_logic;
+		valid : out std_logic
         );
 
 end bloque_8;
@@ -40,10 +42,11 @@ architecture behavioral of bloque_8 is
     
     signal p_data_valid : std_logic := '0'; 
     signal data_valid : std_logic := '0';
+	
+	signal p_pilot_txrx_fin : std_logic := '0';
         
 begin
 
-	-- TODO: TEST THIS
 	-- Wiring input pilot rx (data_symb) to pilot_rx_out
 	pilot_rx.re <= data_symb(23 downto 12);
 	pilot_rx.im <= data_symb(11 downto 0);
@@ -51,6 +54,8 @@ begin
 	-- Wiring as well the sign bit to the pilot_tx_signed
 	pilot_tx_signed <= data_pilot(23);
 	
+	-- Wiring data_valid to valid output port
+	valid <= data_valid;
 
     -- counter
     counter_0_12_1704 : cont_0_12_1704
@@ -72,27 +77,24 @@ begin
             if (data_readed = '1') then
                 p_data_valid <= '0';
                 p_cont_ena <= '0';
+				p_pilot_txrx_fin <= '1';
             else
                 p_data_valid <= '1';
             end if;
         end if;
-        
-        
-        
     end process comb;
 
     sync : process(rst, clk)
     begin
-        
         if (rst = '1') then
             cont_ena <= '0';
             
         elsif (rising_edge(clk)) then
             cont_ena <= p_cont_ena;
             data_valid <= p_data_valid;
+			pilot_txrx_fin <= p_pilot_txrx_fin;
             
         end if;
-    
     end process sync;
     
     -- Concurrent

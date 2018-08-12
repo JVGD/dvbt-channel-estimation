@@ -88,10 +88,10 @@ architecture behavioral of estimador is
 		end component; 
 	
     -- When DPRAMs with symbols and pilots are ready
-	-- reads it and return the pilot_rx and pilot_tx
-	-- although from pilot_tx it only retur if it is 
-	-- positive or negative since pilots_tx can only
-	-- be +4/3 or -4/3
+	-- bloque 8 reads it and return the pilot_rx and 
+	-- pilot_tx, although from pilot_tx it only 
+	-- returns if it is positive or negative since 
+	-- pilots_tx can only be +4/3 or -4/3
     component bloque_8
 		port(
 			clk         : in std_logic;
@@ -103,9 +103,22 @@ architecture behavioral of estimador is
 			data_pilot  : in std_logic_vector(23 downto 0);
 			pilot_ready : in std_logic;
 			pilot_rx 	: out complex12;
-			pilot_tx_signed : out std_logic
+			pilot_tx_signed : out std_logic;
+			pilot_txrx_fin : out std_logic;
+			valid : out std_logic
 			);
         end component;
+	
+	-- It divides pilot_rx by +/- 4/3 = +/-0.75
+	-- depending on the pilot_signed (pilot_tx sign)
+	-- It returns the equalized pilot pilot_eq
+	component bloque_9
+		port(
+			pilot_signed : in std_logic;
+			pilot_rx : in complex12;
+			pilot_eq : out complex12
+			);
+		end component;
     
     -- Signals of synchronism
     signal rst : std_logic;
@@ -146,6 +159,13 @@ architecture behavioral of estimador is
 	-- Signals Block 8 to Block 9
 	signal pilot_tx_signed_b89 : std_logic;
 	signal pilot_rx_b89 : complex12;
+	
+	-- Singal Block 8 to Block 10
+	signal ready_txrx_pilots_b810 : std_logic;
+	signal valid_b810 : std_logic;
+	
+	-- Signal Block 9 to Block 10
+	signal pilot_eq_b910 : complex12;
 	
 	-- For test bench
 	signal pilot_rx_teo : complex12 := (re => (others=>'0'), im => (others=>'0'));
@@ -226,7 +246,16 @@ begin
             data_pilot => data_pilots_b78,
             pilot_ready => ready_pilots_b68,
 			pilot_tx_signed => pilot_tx_signed_b89,
-			pilot_rx => pilot_rx_b89
+			pilot_rx => pilot_rx_b89,
+			pilot_txrx_fin => ready_txrx_pilots_b810,
+			valid => valid_b810
+			);
+			
+	uut_bloque_9 : bloque_9
+		port map(
+			pilot_signed => pilot_tx_signed_b89,
+			pilot_rx => pilot_rx_b89,
+			pilot_eq => pilot_eq_b910
 			);
 			
 	-- stimulus process

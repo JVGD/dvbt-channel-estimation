@@ -4,6 +4,9 @@ use ieee.numeric_std.all;
 use ieee.math_real.all;
 use work.mi_paquete.all;
 
+-- It takes the equalized pilots and stores them
+-- on a DPRAM before the interpolator
+
 entity bloque_10 is
 
     port(

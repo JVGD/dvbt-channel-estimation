@@ -119,6 +119,21 @@ architecture behavioral of estimador is
 			pilot_eq : out complex12
 			);
 		end component;
+	
+	-- It stores the equalized pilots in a DPRAM before
+	-- the interpolator, so later the interpolator can
+	-- fetch them properly
+	component bloque_10
+		port(
+			clk         : in std_logic;
+			rst         : in std_logic; 
+			pilot_eq 	: in complex12;
+			pilot_eq_valid : in std_logic;
+			pilot_addr  : out std_logic_vector(7 downto 0);
+			pilot_data  : out std_logic_vector(23 downto 0);
+			pilot_write_fin : out std_logic
+			);
+		end component;
     
     -- Signals of synchronism
     signal rst : std_logic;
@@ -161,15 +176,20 @@ architecture behavioral of estimador is
 	signal pilot_rx_b89 : complex12;
 	
 	-- Singal Block 8 to Block 10
-	signal ready_txrx_pilots_b810 : std_logic;
+	signal ready_txrx_pilots_b810 : std_logic;		-- This signal is not used
 	signal valid_b810 : std_logic;
 	
 	-- Signal Block 9 to Block 10
 	signal pilot_eq_b910 : complex12;
 	
+	-- Signal Block 10 to Block 11
+	signal pilot_addr_b1011 : std_logic_vector(7 downto 0);
+	signal pilot_data_b1011 : std_logic_vector(23 downto 0);
+	
+	-- Signal Block 10 to Block 12
+	signal pilot_write_fin_b1012 : std_logic;
+	
 	-- For test bench
-	signal pilot_rx_teo : complex12 := (re => (others=>'0'), im => (others=>'0'));
-	signal pilot_tx_signed_teo : std_logic := '0';
 	signal pilot_eq_teo : complex12 := (re => (others=>'0'), im => (others=>'0'));
 
 begin
@@ -225,7 +245,7 @@ begin
             write_fin_b6 => ready_pilots_b68
             );
 			
-	bloque_7_DPRAM: bloque_7 
+	uut_bloque_7 : bloque_7 
         port map (
             clka => clk,
             dina => data_b67,
@@ -257,6 +277,17 @@ begin
 			pilot_signed => pilot_tx_signed_b89,
 			pilot_rx => pilot_rx_b89,
 			pilot_eq => pilot_eq_b910
+			);
+	
+	uut_bloque_10 : bloque_10
+		port map(
+			clk => clk,
+			rst => rst,
+			pilot_eq => pilot_eq_b910,
+			pilot_eq_valid => valid_b810,
+			pilot_addr => pilot_addr_b1011,
+			pilot_data => pilot_data_b1011,
+			pilot_write_fin => pilot_write_fin_b1012
 			);
 			
 	-- stimulus process

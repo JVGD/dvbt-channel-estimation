@@ -43,9 +43,9 @@ architecture behavioral of tb_cont_N_i_M is
 		signal rst: std_logic;
 		
 		-- signals for counter
-		signal N : integer := 2;
-		signal i : integer := 2;
-		signal M : integer := 8;
+		signal N : integer := 0;
+		signal i : integer := 1;
+		signal M : integer := 142;
 		signal enable : std_logic := '0';
 		signal counter : std_logic_vector(natural(ceil(log2(real(M+1))))-1 downto 0);
 		signal cont_ended : std_logic;

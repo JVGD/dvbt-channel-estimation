@@ -87,7 +87,7 @@ begin
                     p_sinf <= sinf;
                     p_ssup <= ssup;
                     p_saddr <= saddr;
-					p_finished <= '1';
+					--p_finished <= '1';
                     -- no se puede inicializar a 0
                     -- porque sino nos cargamos el 
                     -- ultimo estim_valid porque coincidiria
@@ -119,6 +119,7 @@ begin
                     -- condicion para que no desborde
                     -- a addr en ROM que no tienen nada
                     p_estado <= reposo;
+					p_finished <= '1';
                     p_saddr <= (others=>'0'); 
                 else
                     p_saddr <= std_logic_vector(unsigned(saddr) + 1);

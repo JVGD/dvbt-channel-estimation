@@ -55,13 +55,14 @@ begin
 	uut: interpolador11 
 		port map (
 			clk => clk,
+			finished => finished,
 			rst => rst,
 			sup => sup,
 			inf => inf,
 			valid => valid,
 			estim => estim,
 			estim_valid => estim_valid
-			);
+			);			
 
 	-- Clock manager instance
     clk_mng : clkmanager
@@ -81,6 +82,16 @@ begin
 		-- hold reset state for 100 ns.
 		-- Pilots already equalized
 		wait for 20 ns;
+		valid <= '1';   -- inf and sup valid data
+		inf.re <= x"019";   -- d"1.562500" b"000000011001"
+		inf.im <= x"ffa";   -- d"-0.375000" b"111111111010"
+		sup.re <= x"012";   -- d"1.125000" b"000000010010"
+		sup.im <= x"ff1";   -- d"-0.937500" b"111111110001"
+		
+		wait for 10 ns;
+		valid <= '0';   -- inf and sup valid data	
+
+		wait for 250 ns;
 		valid <= '1';   -- inf and sup valid data
 		inf.re <= x"019";   -- d"1.562500" b"000000011001"
 		inf.im <= x"ffa";   -- d"-0.375000" b"111111111010"

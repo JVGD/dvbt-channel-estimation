@@ -45,8 +45,8 @@ architecture behavioral of tb_cont_N_i_M is
 		-- signals for counter
 		signal N : integer := 0;
 		signal i : integer := 1;
-		signal M : integer := 142;
-		signal enable : std_logic := '0';
+		signal M : integer := 10;
+		signal enable : std_logic;
 		signal counter : std_logic_vector(natural(ceil(log2(real(M+1))))-1 downto 0);
 		signal cont_ended : std_logic;
 		
@@ -83,6 +83,7 @@ begin
 	-- stimulus process
 	stim_proc: process
 	begin
+		enable <= '0';
 		wait for 90 ns;
 		enable <= '1';
 		wait;

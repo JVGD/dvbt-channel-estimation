@@ -23,31 +23,23 @@ architecture behavioral of cont_N_i_M is
     
     signal cont : std_logic_vector(natural(ceil(log2(real(M+1))))-1 downto 0);
     signal p_cont : std_logic_vector(natural(ceil(log2(real(M+1))))-1 downto 0);
-    signal p_cont_ended : std_logic := '0';
-    signal s_cont_ended : std_logic := '0';
-    signal stop_count : std_logic := '0';
-    signal p_stop_count : std_logic := '0';
+    signal scont_ended :std_logic; -- cont_ended is not inout
+	signal p_cont_ended : std_logic;
     
 begin   
 
-    comb : process(cont, rst, enable)
+    comb : process(cont, rst, enable, cont)
     begin
-        if ((rst = '0') and (enable = '1')) then
-            if (stop_count = '0') then
-                p_cont <= std_logic_vector(unsigned(cont) + i);            
-            end if;
-            
-            if (unsigned(cont) = M-i) then
-                p_stop_count <= '1';
-            end if;
-            
-            if (unsigned(cont) >= M) then
-                p_cont_ended <= '1';
-            end if;
-        
-		elsif (rst = '1') then
-			p_cont <= std_logic_vector(to_unsigned(N, p_cont'length));
-        end if;
+        if (enable = '1') then
+            p_cont <= std_logic_vector(unsigned(cont) + i);			
+			if (unsigned(cont) = M) then
+				p_cont_ended <= '1';
+			end if;
+		else
+			p_cont <= cont;
+			p_cont_ended <= scont_ended;
+			p_cont_ended <= '0';
+		end if;
         
     end process comb;
 
@@ -56,15 +48,18 @@ begin
     begin
         
         if (rst = '1') then
-            cont <= std_logic_vector(to_unsigned(N, cont'length));
+			-- Init counter to firt value given as a paramenter
+			-- N i M = 10 1 30, first cont = 10
 			counter <= (others=>'0');
 			cont_ended <= '0';
+			scont_ended <= '0';
+            cont <= std_logic_vector(to_unsigned(N, cont'length));
+			
         elsif (rising_edge(clk)) then
             cont <= p_cont;
             counter <= p_cont;
             cont_ended <= p_cont_ended;
-            s_cont_ended <= p_cont_ended;
-            stop_count <= p_stop_count;
+			scont_ended <= p_cont_ended;
         
         end if;
     

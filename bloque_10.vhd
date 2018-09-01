@@ -44,7 +44,7 @@ architecture behavioral of bloque_10 is
     	
 	signal p_pilot_data : complex12 := (re => (others=>'0'), im => (others=>'0'));
 	
-	signal s_pilot_write_fin : std_logic := '0';
+	signal s_pilot_write_fin : std_logic;
         
 begin
 

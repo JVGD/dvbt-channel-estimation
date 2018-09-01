@@ -37,17 +37,17 @@ architecture behavioral of tb_bloque_10 is
 			);
 		end component;
 		
-		--signals for clk manager
-		signal clk: std_logic;
-		signal rst: std_logic;
-		
-		-- signals for counter
-		signal pilot_eq : complex12;
-		signal pilot_eq_valid : std_logic;
-		signal pilot_addr  : std_logic_vector(7 downto 0);
-		signal pilot_data  : std_logic_vector(23 downto 0);
-		signal pilot_write_fin : std_logic;
-		
+	--signals for clk manager
+	signal clk: std_logic;
+	signal rst: std_logic;
+	
+	-- signals for counters
+	signal pilot_eq : complex12;
+	signal pilot_eq_valid : std_logic;
+	signal pilot_addr  : std_logic_vector(7 downto 0);
+	signal pilot_data  : std_logic_vector(23 downto 0);
+	signal pilot_write_fin : std_logic;
+	
 
 begin
 
@@ -56,7 +56,7 @@ begin
         generic map(
             clk_period => 10 ns,
             rst_active_value => '1',
-            rst_cycles => 2
+            rst_cycles => 4
 			)
         port map (
             endsim => '0',

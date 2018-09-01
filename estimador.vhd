@@ -131,6 +131,7 @@ architecture behavioral of estimador is
 			pilot_eq_valid : in std_logic;
 			pilot_addr  : out std_logic_vector(7 downto 0);
 			pilot_data  : out std_logic_vector(23 downto 0);
+			pilot_data_valid : out std_logic;
 			pilot_write_fin : out std_logic
 			);
 		end component;
@@ -199,7 +200,7 @@ architecture behavioral of estimador is
 	-- Signal Block 10 to Block 11
 	signal pilot_addr_b1011 : std_logic_vector(7 downto 0);
 	signal pilot_data_b1011 : std_logic_vector(23 downto 0);
-	signal write_en_b1011 : std_logic_vector(0 downto 0);
+	signal write_en_b1011 : std_logic;
 	
 	-- Signal Block 10 to Block 12
 	signal pilot_write_fin_b1012 : std_logic := '0';
@@ -306,13 +307,14 @@ begin
 			pilot_eq_valid => valid_b810,
 			pilot_addr => pilot_addr_b1011,
 			pilot_data => pilot_data_b1011,
+			pilot_data_valid => write_en_b1011,
 			pilot_write_fin => pilot_write_fin_b1012
 			);
 	
 	uut_bloque_11 : bloque_11
 		port map(
 			clka => clk,
-			wea =>  write_en_b1011,
+			wea(0) =>  write_en_b1011,
 			addra => pilot_addr_b1011,
 			dina => pilot_data_b1011,
 			clkb => clk,

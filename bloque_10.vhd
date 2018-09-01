@@ -16,6 +16,7 @@ entity bloque_10 is
         pilot_eq_valid : in std_logic;
 		pilot_addr  : out std_logic_vector(7 downto 0);
         pilot_data  : out std_logic_vector(23 downto 0);
+		pilot_data_valid : out std_logic;
 		pilot_write_fin : out std_logic
         );
 
@@ -41,10 +42,9 @@ architecture behavioral of bloque_10 is
     
     signal p_enable : std_logic := '0';
     signal enable : std_logic := '0';
-    	
 	signal p_pilot_data : complex12 := (re => (others=>'0'), im => (others=>'0'));
-	
 	signal s_pilot_write_fin : std_logic;
+	signal p_pilot_data_valid : std_logic;
         
 begin
 
@@ -64,17 +64,22 @@ begin
 
     comb : process(rst, pilot_eq_valid, enable, pilot_eq)
     begin
-        if (rst = '0') and (pilot_eq_valid = '1') then
+        if (pilot_eq_valid = '1') then
             p_enable <= '1';
 			p_pilot_data <= pilot_eq;	
-		elsif (rst = '0') and (pilot_eq_valid = '0') then
+		elsif (pilot_eq_valid = '0') then
 			p_enable <= '0';
         end if;
         
-        if (rst = '0') and (enable = '1') then
+        if (enable = '1') then
             if (s_pilot_write_fin = '1') then
                 p_enable <= '0';
+				p_pilot_data_valid <= '0';
+			else
+				p_pilot_data_valid <= '1';
             end if;
+		else
+			p_pilot_data_valid <= '0';
         end if;
 		
     end process comb;
@@ -84,11 +89,13 @@ begin
         if (rst = '1') then
             enable <= '0';
 			pilot_data <= (others=> '0');
+			pilot_data_valid <= '0';
             
         elsif (rising_edge(clk)) then
             enable <= p_enable;
 			pilot_data(23 downto 12) <= p_pilot_data.re;
             pilot_data(11 downto 0) <= p_pilot_data.im;
+			pilot_data_valid <= p_pilot_data_valid;
         end if;
     end process sync;
 

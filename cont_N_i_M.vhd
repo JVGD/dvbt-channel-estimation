@@ -57,6 +57,8 @@ begin
         
         if (rst = '1') then
             cont <= std_logic_vector(to_unsigned(N, cont'length));
+			counter <= (others=>'0');
+			cont_ended <= '0';
         elsif (rising_edge(clk)) then
             cont <= p_cont;
             counter <= p_cont;

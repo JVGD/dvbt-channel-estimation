@@ -134,6 +134,20 @@ architecture behavioral of estimador is
 			pilot_write_fin : out std_logic
 			);
 		end component;
+	
+	-- DPRAM for storing equalized pilots for the interpolator
+	component bloque_11
+		port(
+			clka : in  std_logic;
+			wea : in  std_logic_vector(0 downto 0);
+			addra : in  std_logic_vector(7 downto 0);
+			dina : in  std_logic_vector(23 downto 0);
+			clkb : in  std_logic;
+			addrb : in  std_logic_vector(7downto 0);
+			doutb : out  std_logic_vector(23 downto 0)
+			);
+		end component; 
+
     
     -- Signals of synchronism
     signal rst : std_logic;
@@ -185,9 +199,14 @@ architecture behavioral of estimador is
 	-- Signal Block 10 to Block 11
 	signal pilot_addr_b1011 : std_logic_vector(7 downto 0);
 	signal pilot_data_b1011 : std_logic_vector(23 downto 0);
+	signal write_en_b1011 : std_logic_vector(0 downto 0);
 	
 	-- Signal Block 10 to Block 12
-	signal pilot_write_fin_b1012 : std_logic;
+	signal pilot_write_fin_b1012 : std_logic := '0';
+	
+	-- Signal Block 11 to 12
+	signal pilot_addr_b1112 : std_logic_vector(7 downto 0);
+	signal pilot_data_b1112 : std_logic_vector(23 downto 0);
 	
 	-- For test bench
 	signal pilot_eq_teo : complex12 := (re => (others=>'0'), im => (others=>'0'));
@@ -288,6 +307,17 @@ begin
 			pilot_addr => pilot_addr_b1011,
 			pilot_data => pilot_data_b1011,
 			pilot_write_fin => pilot_write_fin_b1012
+			);
+	
+	uut_bloque_11 : bloque_11
+		port map(
+			clka => clk,
+			wea =>  write_en_b1011,
+			addra => pilot_addr_b1011,
+			dina => pilot_data_b1011,
+			clkb => clk,
+			addrb => pilot_addr_b1112,
+			doutb => pilot_data_b1112
 			);
 			
 	-- stimulus process

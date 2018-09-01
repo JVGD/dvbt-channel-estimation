@@ -152,7 +152,8 @@ begin
             estim   <= (re => "000000000000", im => "000000000000"); 
             sestim  <= (re => "000000000000", im => "000000000000"); 
             sinf    <= (re => "000000000000", im => "000000000000"); 
-            ssup    <= (re => "000000000000", im => "000000000000"); 
+            ssup    <= (re => "000000000000", im => "000000000000");
+			finished<= '1';
         elsif (rising_edge(clk)) then
             estado <= p_estado;
             saddr <= p_saddr;

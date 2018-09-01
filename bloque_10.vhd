@@ -42,9 +42,9 @@ architecture behavioral of bloque_10 is
     signal p_enable : std_logic := '0';
     signal enable : std_logic := '0';
     	
-	signal p_pilot_data : complex12;
+	signal p_pilot_data : complex12 := (re => (others=>'0'), im => (others=>'0'));
 	
-	signal s_pilot_write_fin : std_logic;
+	signal s_pilot_write_fin : std_logic := '0';
         
 begin
 
@@ -66,8 +66,7 @@ begin
     begin
         if (rst = '0') and (pilot_eq_valid = '1') then
             p_enable <= '1';
-			p_pilot_data <= pilot_eq;
-			
+			p_pilot_data <= pilot_eq;	
 		elsif (rst = '0') and (pilot_eq_valid = '0') then
 			p_enable <= '0';
         end if;
@@ -77,12 +76,14 @@ begin
                 p_enable <= '0';
             end if;
         end if;
+		
     end process comb;
 
     sync : process(rst, clk)
     begin
         if (rst = '1') then
             enable <= '0';
+			pilot_data <= (others=> '0');
             
         elsif (rising_edge(clk)) then
             enable <= p_enable;

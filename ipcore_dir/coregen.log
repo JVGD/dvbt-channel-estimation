@@ -1,8 +1,5 @@
 INFO:sim:172 - Generating IP...
 Applying current project options...
 Finished applying current project options.
-Customizing IP...
-Release 14.7 - Xilinx CORE Generator IP GUI Launcher P.20160913 (lin64)
-Copyright (c) 1995-2013 Xilinx, Inc.  All rights reserved.
-Cancelled Customization.
-Wrote CGP file for project 'div12_signed'.
+Cancelled executing Tcl generator.
+Wrote CGP file for project 'bloque_11'.

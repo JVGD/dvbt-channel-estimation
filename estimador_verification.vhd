@@ -19,35 +19,35 @@ architecture behavioral of estimador_verification is
             );
         end component;
  
---    -- Block for writing the generated data
---	-- into the Dual Port RAM
---    component bloque_3
---        port(
---            data_in_b3  : in std_logic_vector(23 downto 0);    -- [Re(23,12), Im(11,0)]
---            valid_in_b3 : in std_logic;                        -- 1 if data_in is ready
---            clk_b3      : in std_logic;
---            rst_b3      : in std_logic;
---            data_out_b3 : out std_logic_vector(23 downto 0);    -- [Re(23,12), Im(11,0)]
---            addr_out_b3 : out std_logic_vector(10 downto 0);    -- 11b = 2^(11) = 2408 addrs
---            write_en_b3 : out std_logic;
---            write_fin_b3 : out std_logic
---            );
---        end component;
---    
---    -- Dual Port RAM where OFDM Symbol (input
---	-- data) is stored
---    component bloque_4
---		port(
---			clka  : in  std_logic;
---			wea   : in  std_logic_vector(0 downto 0);
---			addra : in  std_logic_vector(10 downto 0);
---			dina  : in  std_logic_vector(23 downto 0);
---			clkb  : in  std_logic;
---			addrb : in  std_logic_vector(10 downto 0);
---			doutb : out  std_logic_vector(23 downto 0)
---			);
---		end component;
---	
+    -- Block for writing the generated data
+	-- into the Dual Port RAM
+    component bloque_3
+        port(
+            data_in_b3  : in std_logic_vector(23 downto 0);    -- [Re(23,12), Im(11,0)]
+            valid_in_b3 : in std_logic;                        -- 1 if data_in is ready
+            clk_b3      : in std_logic;
+            rst_b3      : in std_logic;
+            data_out_b3 : out std_logic_vector(23 downto 0);    -- [Re(23,12), Im(11,0)]
+            addr_out_b3 : out std_logic_vector(10 downto 0);    -- 11b = 2^(11) = 2408 addrs
+            write_en_b3 : out std_logic;
+            write_fin_b3 : out std_logic
+            );
+        end component;
+    
+    -- Dual Port RAM where OFDM Symbol (input
+	-- data) is stored
+    component bloque_4
+		port(
+			clka  : in  std_logic;
+			wea   : in  std_logic_vector(0 downto 0);
+			addra : in  std_logic_vector(10 downto 0);
+			dina  : in  std_logic_vector(23 downto 0);
+			clkb  : in  std_logic;
+			addrb : in  std_logic_vector(10 downto 0);
+			doutb : out  std_logic_vector(23 downto 0)
+			);
+		end component;
+	
 --	-- Block implementing the PRBS
 --    component bloque_5
 --        port(
@@ -158,18 +158,18 @@ architecture behavioral of estimador_verification is
     signal valid_b23 : std_logic;
     signal data_b23 : std_logic_vector(23 downto 0);
 
---    -- Signals Block 3 to Block 4
---    signal data_b34 : std_logic_vector(23 downto 0);
---	signal addr_b34 : std_logic_vector(10 downto 0);
---    signal write_en_b34 : std_logic;
---    
---	-- Signals Block 3 to Block 8		
---	signal ready_symb_b38 : std_logic;
---
---	-- Signals Block 4 to Block 8	
---	signal data_symb_b48 : std_logic_vector(23 downto 0);
---	signal addr_symb_b48 : std_logic_vector(10 downto 0);
---    
+    -- Signals Block 3 to Block 4
+    signal data_b34 : std_logic_vector(23 downto 0);
+	signal addr_b34 : std_logic_vector(10 downto 0);
+    signal write_en_b34 : std_logic;
+    
+	-- Signals Block 3 to Block 8		
+	signal ready_symb_b38 : std_logic;
+
+	-- Signals Block 4 to Block 8	
+	signal data_symb_b48 : std_logic_vector(23 downto 0);
+	signal addr_symb_b48 : std_logic_vector(10 downto 0);
+    
 --    -- Signals Block 5 to Block 6	
 --    signal prbs_b56 : std_logic;
 --    signal valid_b56: std_logic;
@@ -222,29 +222,29 @@ begin
             rst_b2      => rst
             );
 
---    uut_bloque_3: bloque_3 
---        port map (
---            data_in_b3   => data_b23,
---            valid_in_b3  => valid_b23,
---            addr_out_b3  => addr_b34,
---            data_out_b3  => data_b34,
---            write_en_b3  => write_en_b34,
---            clk_b3       => clk,
---            rst_b3       => rst,
---            write_fin_b3 => ready_symb_b38
---            );
---
---    uut_bloque_4 : bloque_4 
---        port map (
---            clka  => clk,
---            wea(0) => write_en_b34,
---            addra => addr_b34,
---            dina  => data_b34,
---            clkb  => clk,
---            addrb => addr_symb_b48,
---            doutb => data_symb_b48
---            );
---            
+    uut_bloque_3: bloque_3 
+        port map (
+            data_in_b3   => data_b23,
+            valid_in_b3  => valid_b23,
+            addr_out_b3  => addr_b34,
+            data_out_b3  => data_b34,
+            write_en_b3  => write_en_b34,
+            clk_b3       => clk,
+            rst_b3       => rst,
+            write_fin_b3 => ready_symb_b38
+            );
+
+    uut_bloque_4 : bloque_4 
+        port map (
+            clka  => clk,
+            wea(0) => write_en_b34,
+            addra => addr_b34,
+            dina  => data_b34,
+            clkb  => clk,
+            addrb => addr_symb_b48,
+            doutb => data_symb_b48
+            );
+            
 --	uut_bloque_5 : bloque_5
 --        port map(
 --            clk   => clk,

@@ -33,7 +33,9 @@ begin
         if (enable = '1') then
             p_cont <= std_logic_vector(unsigned(cont) + i);			
 			if (unsigned(cont) = M) then
-				p_cont_ended <= '1';
+				p_cont_ended <= '1';		-- Signaling end of count
+				-- Reseting cout to N
+				p_cont <= std_logic_vector(to_unsigned(N, cont'length));
 			end if;
 		else
 			p_cont <= cont;

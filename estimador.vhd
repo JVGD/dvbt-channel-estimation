@@ -191,7 +191,7 @@ architecture behavioral of estimador is
 	signal pilot_rx_b89 : complex12;
 	
 	-- Singal Block 8 to Block 10
-	signal ready_txrx_pilots_b810 : std_logic;		-- This signal is not used
+	signal pilots_txrx_fin_b810 : std_logic;		-- This signal is not used
 	signal valid_b810 : std_logic;
 	
 	-- Signal Block 9 to Block 10
@@ -288,7 +288,7 @@ begin
             pilot_ready => ready_pilots_b68,
 			pilot_tx_signed => pilot_tx_signed_b89,
 			pilot_rx => pilot_rx_b89,
-			pilot_txrx_fin => ready_txrx_pilots_b810,
+			pilot_txrx_fin => pilots_txrx_fin_b810,
 			valid => valid_b810
 			);
 			

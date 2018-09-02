@@ -57,6 +57,7 @@ architecture behavioral of bloque_2 is
     signal s_rst : std_logic;
     signal s_clk : std_logic := '1';
     signal endsim : std_logic := '0';    -- esta es IN para manejar el clk
+	signal can_write : std_logic := '0';
 
 
 begin
@@ -82,11 +83,11 @@ begin
             STIMULI_NIBBLES          => 6,                --! Number of hex chars in the line of the data file
             DATA_WIDTH               => 24,               --! Width of generated data = STIM_NIBB * 4hex
             THROUGHPUT               => 2,                --! Output 1 valid data each THROUGHPUT cycles
-            INVALID_DATA             => keep,             --! Output value when data is not valid
+            INVALID_DATA             => zero,             --! Output value when data is not valid
             CYCLES_AFTER_LAST_VECTOR => 300)              --! Number of cycles between last data and assertion of endsim
         port map(
             clk       => s_clk,                           --! Align generated data to this clock
-            can_write => not(s_rst),                             --! Active high, tells datagen it can assert valid. Use for control-flow
+            can_write => can_write,                       --! Active high, tells datagen it can assert valid. Use for control-flow
             data      => data_b2, 						  --! Generated data
             valid     => valid_b2,                        --! Active high, indicates data is valid
             endsim    => endsim                           --! Active high, tells the other simulation processes to close their open files
@@ -95,6 +96,7 @@ begin
     -- Outputing the CLK for the rest of the blocks
     clk_b2 <= s_clk;
     rst_b2 <= s_rst;
+	can_write <= not(s_rst);
 
 end behavioral;
 

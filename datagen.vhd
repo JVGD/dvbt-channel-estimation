@@ -108,6 +108,10 @@ begin
     print ("datagen: opening input file" & STIMULI_FILE);
     file_open(file_pointer, STIMULI_FILE, READ_MODE);
     
+	-- Before doing nothing everything is set
+	-- to 0 and data not valid
+	data <= (others=>'0');
+	valid <= '0';
     wait until rising_edge(clk); -- do nothing until first valid clock event
     
     while (not endfile(file_pointer)) loop

@@ -25,19 +25,21 @@ begin
     -- Combinational process
     comb: process (prbs_reg, s_in, rst)
     begin
-        if (rst = '0') then
             --Combinational process
             s_in <= prbs_reg(2) xor prbs_reg(0);
             p_Yout <= prbs_reg(0);
             p_prbs_reg <= s_in & prbs_reg(10 downto 1);
             p_valid <= '1';
-        end if;
     end process comb;
     
 	--Sequential process
 	sequential : process(rst, prbs_reg, clk, s_in)
 	begin
-		if ((rst = '0') and rising_edge(clk)) then
+		if (rst = '1') then
+			prbs_reg <= "11111111111";
+			Yout <= '0';
+			valid <= '0';
+		elsif ((rst = '0') and rising_edge(clk)) then
 			prbs_reg <= p_prbs_reg;
             Yout <= p_Yout;
             valid <= p_valid;

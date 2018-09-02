@@ -41,7 +41,7 @@ begin
     comb: process(prbs_b6, rst_b6, addr, clk_b6, delay, valid_b6, end_cont)
     begin
     
-        if ((rst_b6 = '0') and (valid_b6 = '1') and (end_cont = '0')) then
+        if ((valid_b6 = '1') and (end_cont = '0')) then
         
             -- There will be data on next clk
             p_write_en <= '1';
@@ -84,6 +84,7 @@ begin
         if (rst_b6 = '1') then
             write_en_b6 <= '0';
             addr_out_b6 <= (others => '0');
+			write_fin_b6 <= '0';
               
         elsif (rising_edge(clk_b6) and (rst_b6 = '0')) then
             data_out_b6 <= data;

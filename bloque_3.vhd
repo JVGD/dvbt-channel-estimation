@@ -97,6 +97,7 @@ begin
             addr_out_b3 <= (others=>'0');
             write_en_b3 <= '0';
             data_out_b3 <= (others=>'0');
+			write_fin_b3 <= '0';
             
         elsif (rising_edge(clk_b3)) then
             addr         <= p_addr;

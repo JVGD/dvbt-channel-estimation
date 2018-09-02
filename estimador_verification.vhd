@@ -324,7 +324,7 @@ begin
 			
 	-- stimulus process
 	stim_proc: process
-	begin		
+	begin
 		wait;
 	end process;			
 

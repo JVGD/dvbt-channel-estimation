@@ -50,14 +50,36 @@ architecture behavioral of bloque_2 is
             );
         end component;
 
+	-- verification checker
+	component datacompare is
+		generic(
+			SIMULATION_LABEL         : string  := "b2 datacompare";               --! Allow to separate messages from different instances in SIMULATION
+			VERBOSE                  : boolean := false;                          --! Report correct data and not only erroneous data
+			DEBUG                    : boolean := false;                          --! Print debug info (developers only)        
+			GOLD_OUTPUT_FILE         : string  := "symbOFDM.txt"; 				  --! File where data is stored
+			GOLD_OUTPUT_NIBBLES      : integer := 2;                              --! Maximum hex chars for each output data 
+			DATA_WIDTH               : integer := 8                               --! Width of inout data
+			);
+		port(
+			clk    : in std_logic;                                --! Expects input data aligned to this clock
+			data   : in std_logic_vector (DATA_WIDTH-1 downto 0); --! Data to compare with data in file
+			valid  : in std_logic;                                --! Active high, indicates data is valid
+			endsim : in std_logic                                 --! Active high, tells the process to close its open files
+			);
+		end component;
 
-    -- Signals for Clock Manager
-    -- No inicializamos rst y clk porque son out
-    constant clk_period : time := 10 ns;
-    signal s_rst : std_logic;
+    -- clkmanager signals
+    signal s_endsim : std_logic := '0';    -- esta es IN para manejar el clk
+	signal s_rst : std_logic;
     signal s_clk : std_logic := '1';
-    signal endsim : std_logic := '0';    -- esta es IN para manejar el clk
-	signal can_write : std_logic := '0';
+    
+	-- datagen signals
+	signal s_can_write : std_logic := '0';
+	signal s_data_b2 : std_logic_vector(23 downto 0);
+	signal s_valid_b2 : std_logic;
+	
+	-- datacompare signals
+	
 
 
 begin
@@ -65,11 +87,12 @@ begin
     -- Clock manager instance
     bloque_1_clk : clkmanager
         generic map(
-            clk_period => clk_period,
+            clk_period => 10 ns,
             rst_active_value => '1',
-            rst_cycles => 2)
+            rst_cycles => 2
+			)
         port map (
-            endsim => endsim,
+            endsim => s_endsim,
             clk => s_clk,
             rst => s_rst
             );
@@ -82,21 +105,41 @@ begin
             STIMULI_FILE             => "symbOFDM.txt",   --! File where data is stored
             STIMULI_NIBBLES          => 6,                --! Number of hex chars in the line of the data file
             DATA_WIDTH               => 24,               --! Width of generated data = STIM_NIBB * 4hex
-            THROUGHPUT               => 2,                --! Output 1 valid data each THROUGHPUT cycles
-            INVALID_DATA             => zero,             --! Output value when data is not valid
+            THROUGHPUT               => 1,                --! Output 1 valid data each THROUGHPUT cycles
+            INVALID_DATA             => keep,             --! Output value when data is not valid
             CYCLES_AFTER_LAST_VECTOR => 300)              --! Number of cycles between last data and assertion of endsim
         port map(
             clk       => s_clk,                           --! Align generated data to this clock
-            can_write => can_write,                       --! Active high, tells datagen it can assert valid. Use for control-flow
-            data      => data_b2, 						  --! Generated data
-            valid     => valid_b2,                        --! Active high, indicates data is valid
-            endsim    => endsim                           --! Active high, tells the other simulation processes to close their open files
+            can_write => s_can_write,                       --! Active high, tells datagen it can assert valid. Use for control-flow
+            data      => s_data_b2, 						  --! Generated data
+            valid     => s_valid_b2,                        --! Active high, indicates data is valid
+            endsim    => s_endsim                           --! Active high, tells the other simulation processes to close their open files
             );
+			
+	bloque_2_datacompare : datacompare
+		generic map(
+			SIMULATION_LABEL => "b2 datacompare",               	--! Allow to separate messages from different instances in SIMULATION
+			VERBOSE => false,                          				--! Report correct data and not only erroneous data
+			DEBUG => false,                          				--! Print debug info (developers only)        
+			GOLD_OUTPUT_FILE => "symbOFDM.txt", 				  	--! File where data is stored
+			GOLD_OUTPUT_NIBBLES => 6,                              	--! Maximum hex chars for each output data 
+			DATA_WIDTH => 24                               			--! Width of inout data
+			)
+		port map(
+			clk => s_clk,                                	--! Expects input data aligned to this clock
+			data => s_data_b2, 								--! Data to compare with data in file
+			valid => s_valid_b2,                            --! Active high, indicates data is valid
+			endsim => s_endsim                              --! Active high, tells the process to close its open files
+			);
 
     -- Outputing the CLK for the rest of the blocks
-    clk_b2 <= s_clk;
+    data_b2 <= s_data_b2;
+	valid_b2 <= s_valid_b2;
+	clk_b2 <= s_clk;
     rst_b2 <= s_rst;
-	can_write <= not(s_rst);
+	
+	-- for data gen
+	s_can_write <= not(s_rst);
 
 end behavioral;
 

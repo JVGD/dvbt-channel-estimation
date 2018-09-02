@@ -111,6 +111,7 @@ begin
 	-- Before doing nothing everything is set
 	-- to 0 and data not valid
 	data <= (others=>'0');
+	last_valid_data <= (others=>'0');
 	valid <= '0';
     wait until rising_edge(clk); -- do nothing until first valid clock event
     

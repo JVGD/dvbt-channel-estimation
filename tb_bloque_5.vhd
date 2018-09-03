@@ -56,7 +56,7 @@ begin
         generic map(
             clk_period => 10 ns,
             rst_active_value => '1',
-            rst_cycles => 1)
+            rst_cycles => 2)
         port map (
             endsim => '0',
             clk => clk,

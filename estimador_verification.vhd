@@ -48,16 +48,16 @@ architecture behavioral of estimador_verification is
 			);
 		end component;
 	
---	-- Block implementing the PRBS
---    component bloque_5
---        port(
---            clk   : in std_logic;	--clock
---            rst : in std_logic;	    --reset
---            Yout  : out std_logic;	--randomized output
---            valid : out std_logic
---            );        
---		end component; 
--- 
+	-- Block implementing the PRBS
+    component bloque_5
+        port(
+            clk   : in std_logic;	--clock
+            rst : in std_logic;	    --reset
+            Yout  : out std_logic;	--randomized output
+            valid : out std_logic
+            );        
+		end component; 
+ 
 --    -- Block for generating pilots out of the results
 --	-- of the PRBS and storing it in DPRAM of Block 7
 --    component bloque_6
@@ -170,9 +170,9 @@ architecture behavioral of estimador_verification is
 	signal data_symb_b48 : std_logic_vector(23 downto 0);
 	signal addr_symb_b48 : std_logic_vector(10 downto 0);
     
---    -- Signals Block 5 to Block 6	
---    signal prbs_b56 : std_logic;
---    signal valid_b56: std_logic;
+    -- Signals Block 5 to Block 6	
+    signal prbs_b56 : std_logic;
+    signal valid_b56: std_logic;
 --    
 --    -- Signals Block 6 to Block 7	
 --    signal data_b67 : std_logic_vector(23 downto 0);
@@ -245,13 +245,13 @@ begin
             doutb => data_symb_b48
             );
             
---	uut_bloque_5 : bloque_5
---        port map(
---            clk   => clk,
---            rst => rst,
---            Yout  => prbs_b56,
---            valid => valid_b56
---			);       
+	uut_bloque_5 : bloque_5
+        port map(
+            clk   => clk,
+            rst => rst,
+            Yout  => prbs_b56,
+            valid => valid_b56
+			);       
 --            
 --	uut_bloque_6 : bloque_6 
 --        port map (

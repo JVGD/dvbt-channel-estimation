@@ -18,7 +18,24 @@ architecture behavioral of estimador_verification is
             rst_b2      : out std_logic
             );
         end component;
- 
+		
+	component datawrite
+		generic(
+			SIMULATION_LABEL    : string  := "datawrite";                    --! Allow to separate messages from different instances in SIMULATION
+			VERBOSE             : boolean := false;                          --! Print more internal details
+			DEBUG               : boolean := false;                          --! Print debug info (developers only)        
+			OUTPUT_FILE         : string  := "./output/datawrite_test.txt";  --! File where data will be stored
+			OUTPUT_NIBBLES      : integer := 2;                              --! Hex chars on each output line 
+			DATA_WIDTH          : integer := 8                               --! Width of input data
+			);
+		port(
+			clk    : in std_logic;                                --! Will sample input on rising_edge of this clock
+			data   : in std_logic_vector (DATA_WIDTH-1 downto 0); --! Data to write to file
+			valid  : in std_logic;                                --! Active high, indicates data is valid
+			endsim : in std_logic                                 --! Active high, tells the process to close its open files
+			);
+		end component;
+
     -- Block for writing the generated data
 	-- into the Dual Port RAM
     component bloque_3
@@ -221,6 +238,22 @@ begin
             clk_b2      => clk,
             rst_b2      => rst
             );
+			
+	ver_bloque_2 :datawrite
+		generic map(
+			SIMULATION_LABEL => "datawrite",            --! Allow to separate messages from different instances in SIMULATION
+			VERBOSE => false,                          	--! Print more internal details
+			DEBUG => false,                          	--! Print debug info (developers only)        
+			OUTPUT_FILE => "verification/bloque_2_generated.txt",    --! File where data will be stored
+			OUTPUT_NIBBLES => 6,                        --! Hex chars on each output line 
+			DATA_WIDTH => 24                            --! Width of input data
+			)
+		port map(
+			clk => clk,             --! Will sample input on rising_edge of this clock
+			data => data_b23, 		--! Data to write to file
+			valid  => valid_b23,    --! Active high, indicates data is valid
+			endsim => '0'           --! Active high, tells the process to close its open files
+			);
 
     uut_bloque_3: bloque_3 
         port map (
@@ -251,7 +284,24 @@ begin
             rst => rst,
             Yout  => prbs_b56,
             valid => valid_b56
-			);       
+			);
+
+	ver_bloque_5 :datawrite
+		generic map(
+			SIMULATION_LABEL => "datawrite",            --! Allow to separate messages from different instances in SIMULATION
+			VERBOSE => false,                          	--! Print more internal details
+			DEBUG => false,                          	--! Print debug info (developers only)        
+			OUTPUT_FILE => "verification/bloque_5_generated.txt", --! File where data will be stored
+			OUTPUT_NIBBLES => 1,                        --! Hex chars on each output line 
+			DATA_WIDTH => 4                            --! Width of input data
+			)
+		port map(
+			clk => clk,             	--! Will sample input on rising_edge of this clock
+			data => "000" & prbs_b56,	--! Data to write to file
+			valid  => valid_b56,    	--! Active high, indicates data is valid
+			endsim => '0'           	--! Active high, tells the process to close its open files
+			);
+			
 --            
 --	uut_bloque_6 : bloque_6 
 --        port map (

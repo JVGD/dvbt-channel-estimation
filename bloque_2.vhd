@@ -50,24 +50,6 @@ architecture behavioral of bloque_2 is
             );
         end component;
 
-	-- verification checker
-	component datacompare is
-		generic(
-			SIMULATION_LABEL         : string  := "b2 datacompare";               --! Allow to separate messages from different instances in SIMULATION
-			VERBOSE                  : boolean := false;                          --! Report correct data and not only erroneous data
-			DEBUG                    : boolean := false;                          --! Print debug info (developers only)        
-			GOLD_OUTPUT_FILE         : string  := "symbOFDM.txt"; 				  --! File where data is stored
-			GOLD_OUTPUT_NIBBLES      : integer := 2;                              --! Maximum hex chars for each output data 
-			DATA_WIDTH               : integer := 8                               --! Width of inout data
-			);
-		port(
-			clk    : in std_logic;                                --! Expects input data aligned to this clock
-			data   : in std_logic_vector (DATA_WIDTH-1 downto 0); --! Data to compare with data in file
-			valid  : in std_logic;                                --! Active high, indicates data is valid
-			endsim : in std_logic                                 --! Active high, tells the process to close its open files
-			);
-		end component;
-
     -- clkmanager signals
     signal s_endsim : std_logic := '0';    -- esta es IN para manejar el clk
 	signal s_rst : std_logic;
@@ -116,21 +98,6 @@ begin
             endsim    => s_endsim                           --! Active high, tells the other simulation processes to close their open files
             );
 			
-	bloque_2_datacompare : datacompare
-		generic map(
-			SIMULATION_LABEL => "b2 datacompare",               	--! Allow to separate messages from different instances in SIMULATION
-			VERBOSE => false,                          				--! Report correct data and not only erroneous data
-			DEBUG => false,                          				--! Print debug info (developers only)        
-			GOLD_OUTPUT_FILE => "symbOFDM.txt", 				  	--! File where data is stored
-			GOLD_OUTPUT_NIBBLES => 6,                              	--! Maximum hex chars for each output data 
-			DATA_WIDTH => 24                               			--! Width of inout data
-			)
-		port map(
-			clk => s_clk,                                	--! Expects input data aligned to this clock
-			data => s_data_b2, 								--! Data to compare with data in file
-			valid => s_valid_b2,                            --! Active high, indicates data is valid
-			endsim => s_endsim                              --! Active high, tells the process to close its open files
-			);
 
     -- Outputing the CLK for the rest of the blocks
     data_b2 <= s_data_b2;

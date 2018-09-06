@@ -67,12 +67,13 @@ architecture behavioral of estimador_verification is
 	
 	-- Block implementing the PRBS
     component bloque_5
-        port(
-            clk   : in std_logic;	--clock
-            rst : in std_logic;	    --reset
-            Yout  : out std_logic;	--randomized output
-            valid : out std_logic
-            );        
+		port(
+			clk   : in std_logic;   --clock
+			rst : in std_logic;	--reset
+			Yout  : out std_logic;	--randomized output
+			valid : out std_logic;
+			enable : in std_logic
+			);     
 		end component; 
  
 --    -- Block for generating pilots out of the results
@@ -283,7 +284,8 @@ begin
             clk   => clk,
             rst => rst,
             Yout  => prbs_b56,
-            valid => valid_b56
+            valid => valid_b56,
+			enable => valid_b23
 			);
 
 	ver_bloque_5 :datawrite

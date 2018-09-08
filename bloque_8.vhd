@@ -23,17 +23,7 @@ entity bloque_8 is
 
 end bloque_8;
 
-architecture behavioral of bloque_8 is
-
---    component cont_0_12_1704 is
---        port(
---            clk : in std_logic;
---            rst : in std_logic;
---            enable: in std_logic;
---            counter : out std_logic_vector(10 downto 0);
---            cont_ended : out std_logic
---            );
---    end component;    
+architecture behavioral of bloque_8 is  
 
 	-- cont
 	component cont_N_i_M is
@@ -54,11 +44,11 @@ architecture behavioral of bloque_8 is
     signal p_cont_ena   : std_logic := '0';
     signal cont_ena     : std_logic := '0';
     
-    signal addr_data : std_logic_vector(10 downto 0);
+    signal addr_data 	: std_logic_vector(10 downto 0);
     signal data_readed  : std_logic := '0';
     
     signal p_data_valid : std_logic := '0'; 
-    signal data_valid : std_logic := '0';
+    signal data_valid 	: std_logic := '0';
 	
 	signal p_pilot_txrx_fin : std_logic := '0';
         
@@ -73,16 +63,6 @@ begin
 	
 	-- Wiring data_valid to valid output port
 	valid <= data_valid;
-
---    -- counter
---    counter_0_12_1704 : cont_0_12_1704
---        port map(
---            clk => clk,
---            rst => rst,
---            enable => cont_ena,
---            counter => addr_data,
---            cont_ended => data_readed
---            );
 
 	uut_cont_N_i_M : cont_N_i_M
 		generic map( 

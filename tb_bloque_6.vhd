@@ -98,10 +98,12 @@ begin
 			enable => enable
         );       
 
-	enable <= not rst;
 
 	stim : process
 	begin
+		enable <= '0';
+		wait for 30 ns;
+		enable <= '1';
 		wait for 17 us;
 		wait;
 	end process;

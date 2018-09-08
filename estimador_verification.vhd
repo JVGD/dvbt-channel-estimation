@@ -105,27 +105,27 @@ architecture behavioral of estimador_verification is
 			);
 		end component; 
 
---    -- When DPRAMs with symbols and pilots are ready
---	-- bloque 8 reads it and return the pilot_rx and 
---	-- pilot_tx, although from pilot_tx it only 
---	-- returns if it is positive or negative since 
---	-- pilots_tx can only be +4/3 or -4/3
---    component bloque_8
---		port(
---			clk         : in std_logic;
---			rst         : in std_logic;
---			addr_symb   : out std_logic_vector(10 downto 0);
---			data_symb   : in std_logic_vector(23 downto 0);
---			symb_ready  : in std_logic;
---			addr_pilot  : out std_logic_vector(10 downto 0);
---			data_pilot  : in std_logic_vector(23 downto 0);
---			pilot_ready : in std_logic;
---			pilot_rx 	: out complex12;
---			pilot_tx_signed : out std_logic;
---			pilot_txrx_fin : out std_logic;
---			valid : out std_logic
---			);
---        end component;
+    -- When DPRAMs with symbols and pilots are ready
+	-- bloque 8 reads it and return the pilot_rx and 
+	-- pilot_tx, although from pilot_tx it only 
+	-- returns if it is positive or negative since 
+	-- pilots_tx can only be +4/3 or -4/3
+    component bloque_8
+		port(
+			clk         : in std_logic;
+			rst         : in std_logic;
+			addr_symb   : out std_logic_vector(10 downto 0);
+			data_symb   : in std_logic_vector(23 downto 0);
+			symb_ready  : in std_logic;
+			addr_pilot  : out std_logic_vector(10 downto 0);
+			data_pilot  : in std_logic_vector(23 downto 0);
+			pilot_ready : in std_logic;
+			pilot_rx 	: out complex12;
+			pilot_tx_signed : out std_logic;
+			pilot_txrx_fin : out std_logic;
+			valid : out std_logic
+			);
+        end component;
 --	
 --	-- It divides pilot_rx by +/- 4/3 = +/-0.75
 --	-- depending on the pilot_signed (pilot_tx sign)
@@ -203,14 +203,14 @@ architecture behavioral of estimador_verification is
 	-- Signals Block 7 to Block 8	
 	signal data_pilots_b78 : std_logic_vector(23 downto 0);
 	signal addr_pilots_b78 : std_logic_vector(10 downto 0);
---	
---	-- Signals Block 8 to Block 9
---	signal pilot_tx_signed_b89 : std_logic;
---	signal pilot_rx_b89 : complex12;
---	
---	-- Singal Block 8 to Block 10
---	signal pilots_txrx_fin_b810 : std_logic;		-- This signal is not used
---	signal valid_b810 : std_logic;
+	
+	-- Signals Block 8 to Block 9
+	signal pilot_tx_signed_b89 : std_logic;
+	signal pilot_rx_b89 : complex12;
+	
+	-- Singal Block 8 to Block 10
+	signal pilots_txrx_fin_b810 : std_logic;		-- This signal is not used
+	signal valid_b810 : std_logic;
 --	
 --	-- Signal Block 9 to Block 10
 --	signal pilot_eq_b910 : complex12;
@@ -327,23 +327,23 @@ begin
             addrb => addr_pilots_b78,
             doutb => data_pilots_b78
             );
--- 
---    uut_bloque_8 : bloque_8 
---        port map (
---            clk => clk,
---            rst => rst,
---            addr_symb => addr_symb_b48,
---            data_symb => data_symb_b48,
---            symb_ready => ready_symb_b38,
---            addr_pilot => addr_pilots_b78,
---            data_pilot => data_pilots_b78,
---            pilot_ready => ready_pilots_b68,
---			pilot_tx_signed => pilot_tx_signed_b89,
---			pilot_rx => pilot_rx_b89,
---			pilot_txrx_fin => pilots_txrx_fin_b810,
---			valid => valid_b810
---			);
---			
+ 
+    uut_bloque_8 : bloque_8 
+        port map (
+            clk => clk,
+            rst => rst,
+            addr_symb => addr_symb_b48,
+            data_symb => data_symb_b48,
+            symb_ready => ready_symb_b38,
+            addr_pilot => addr_pilots_b78,
+            data_pilot => data_pilots_b78,
+            pilot_ready => ready_pilots_b68,
+			pilot_tx_signed => pilot_tx_signed_b89,
+			pilot_rx => pilot_rx_b89,
+			pilot_txrx_fin => pilots_txrx_fin_b810,
+			valid => valid_b810
+			);
+			
 --	uut_bloque_9 : bloque_9
 --		port map(
 --			pilot_signed => pilot_tx_signed_b89,

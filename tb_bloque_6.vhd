@@ -5,10 +5,10 @@ use ieee.std_logic_1164.all;
 -- arithmetic functions with signed or unsigned values
 --use ieee.numeric_std.all;
  
-entity tb_bloque_56 is
-end tb_bloque_56;
+entity tb_bloque_6 is
+end tb_bloque_6;
  
-architecture behavior of tb_bloque_56 is 
+architecture behavior of tb_bloque_6 is 
  
     -- component declaration for the unit under test (uut)
     component bloque_6
@@ -26,13 +26,14 @@ architecture behavior of tb_bloque_56 is
     
     -- PRBS
     component bloque_5
-        port(
-            clk   : in std_logic;	--clock
-            rst : in std_logic;	    --reset
-            Yout  : out std_logic;	--randomized output
-            valid : out std_logic
-            );
-            
+		port(
+			clk   : in std_logic;   --clock
+			rst : in std_logic;	--reset
+			Yout  : out std_logic;	--randomized output
+			valid : out std_logic;
+			enable : in std_logic
+			);
+				
     end component; 
     
     -- clkmanager component
@@ -58,6 +59,7 @@ architecture behavior of tb_bloque_56 is
     signal addr : std_logic_vector(10 downto 0);
     signal valid: std_logic;
     signal write_fin : std_logic;
+	signal enable : std_logic;
     
 begin
  
@@ -92,7 +94,16 @@ begin
             clk   => clk,
             rst => rst,
             Yout  => prbs_reg,
-            valid => valid
+            valid => valid,
+			enable => enable
         );       
+
+	enable <= not rst;
+
+	stim : process
+	begin
+		wait for 17 us;
+		wait;
+	end process;
 
 end;

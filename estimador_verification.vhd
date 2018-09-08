@@ -76,35 +76,35 @@ architecture behavioral of estimador_verification is
 			);     
 		end component; 
  
---    -- Block for generating pilots out of the results
---	-- of the PRBS and storing it in DPRAM of Block 7
---    component bloque_6
---		port(
---			clk_b6       : in std_logic;
---			rst_b6       : in std_logic;
---			prbs_b6      : in std_logic;
---			valid_b6     : in std_logic;
---			data_out_b6  : out std_logic_vector(23 downto 0);
---			addr_out_b6  : out std_logic_vector(10 downto 0);
---			write_en_b6  : out std_logic;
---			write_fin_b6 : out std_logic
---			);
---		end component;
---    
---	-- Dual Port RAM with the pilots generated
---	-- per symbol (pilots are only in positions 1:12:1705)
---	component bloque_7
---		port(
---			clka : in  std_logic;
---			wea : in  std_logic_vector(0 downto 0);
---			addra : in  std_logic_vector(10 downto 0);
---			dina : in  std_logic_vector(23 downto 0);
---			clkb : in  std_logic;
---			addrb : in  std_logic_vector(10 downto 0);
---			doutb : out  std_logic_vector(23 downto 0)
---			);
---		end component; 
---	
+    -- Block for generating pilots out of the results
+	-- of the PRBS and storing it in DPRAM of Block 7
+    component bloque_6
+		port(
+			clk_b6       : in std_logic;
+			rst_b6       : in std_logic;
+			prbs_b6      : in std_logic;
+			valid_b6     : in std_logic;
+			data_out_b6  : out std_logic_vector(23 downto 0);
+			addr_out_b6  : out std_logic_vector(10 downto 0);
+			write_en_b6  : out std_logic;
+			write_fin_b6 : out std_logic
+			);
+		end component;
+    
+	-- Dual Port RAM with the pilots generated
+	-- per symbol (pilots are only in positions 1:12:1705)
+	component bloque_7
+		port(
+			clka : in  std_logic;
+			wea : in  std_logic_vector(0 downto 0);
+			addra : in  std_logic_vector(10 downto 0);
+			dina : in  std_logic_vector(23 downto 0);
+			clkb : in  std_logic;
+			addrb : in  std_logic_vector(10 downto 0);
+			doutb : out  std_logic_vector(23 downto 0)
+			);
+		end component; 
+
 --    -- When DPRAMs with symbols and pilots are ready
 --	-- bloque 8 reads it and return the pilot_rx and 
 --	-- pilot_tx, although from pilot_tx it only 
@@ -191,18 +191,18 @@ architecture behavioral of estimador_verification is
     -- Signals Block 5 to Block 6	
     signal prbs_b56 : std_logic;
     signal valid_b56: std_logic;
---    
---    -- Signals Block 6 to Block 7	
---    signal data_b67 : std_logic_vector(23 downto 0);
---    signal addr_b67 : std_logic_vector(10 downto 0);
---    signal write_en_b67 : std_logic;
---	
---	-- Signals Block 6 to Block 8
---	signal ready_pilots_b68 : std_logic;
---	
---	-- Signals Block 7 to Block 8	
---	signal data_pilots_b78 : std_logic_vector(23 downto 0);
---	signal addr_pilots_b78 : std_logic_vector(10 downto 0);
+    
+    -- Signals Block 6 to Block 7	
+    signal data_b67 : std_logic_vector(23 downto 0);
+    signal addr_b67 : std_logic_vector(10 downto 0);
+    signal write_en_b67 : std_logic;
+	
+	-- Signals Block 6 to Block 8
+	signal ready_pilots_b68 : std_logic;
+	
+	-- Signals Block 7 to Block 8	
+	signal data_pilots_b78 : std_logic_vector(23 downto 0);
+	signal addr_pilots_b78 : std_logic_vector(10 downto 0);
 --	
 --	-- Signals Block 8 to Block 9
 --	signal pilot_tx_signed_b89 : std_logic;
@@ -304,29 +304,29 @@ begin
 			endsim => '0'           	--! Active high, tells the process to close its open files
 			);
 			
---            
---	uut_bloque_6 : bloque_6 
---        port map (
---            clk_b6  => clk,
---            rst_b6  => rst,
---            prbs_b6 => prbs_b56,
---            valid_b6 => valid_b56,
---            data_out_b6 => data_b67,
---            addr_out_b6 => addr_b67,
---            write_en_b6 => write_en_b67,
---            write_fin_b6 => ready_pilots_b68
---            );
---			
---	uut_bloque_7 : bloque_7 
---        port map (
---            clka => clk,
---            dina => data_b67,
---            addra => addr_b67,
---            wea(0) => write_en_b67,
---            clkb => clk,
---            addrb => addr_pilots_b78,
---            doutb => data_pilots_b78
---            );
+            
+	uut_bloque_6 : bloque_6 
+        port map (
+            clk_b6  => clk,
+            rst_b6  => rst,
+            prbs_b6 => prbs_b56,
+            valid_b6 => valid_b56,
+            data_out_b6 => data_b67,
+            addr_out_b6 => addr_b67,
+            write_en_b6 => write_en_b67,
+            write_fin_b6 => ready_pilots_b68
+            );
+			
+	uut_bloque_7 : bloque_7 
+        port map (
+            clka => clk,
+            dina => data_b67,
+            addra => addr_b67,
+            wea(0) => write_en_b67,
+            clkb => clk,
+            addrb => addr_pilots_b78,
+            doutb => data_pilots_b78
+            );
 -- 
 --    uut_bloque_8 : bloque_8 
 --        port map (

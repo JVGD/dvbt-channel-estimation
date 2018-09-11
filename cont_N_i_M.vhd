@@ -40,7 +40,6 @@ begin
 		else
 			p_cont <= cont;
 			p_cont_ended <= scont_ended;
-			p_cont_ended <= '0';
 		end if;
         
     end process comb;

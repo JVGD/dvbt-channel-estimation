@@ -104,7 +104,9 @@ begin
 		enable <= '0';
 		wait for 30 ns;
 		enable <= '1';
-		wait for 17 us;
+		--wait for 17050 ns;
+		wait for 17100 ns;
+		enable <= '0';
 		wait;
 	end process;
 

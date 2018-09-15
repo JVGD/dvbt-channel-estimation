@@ -3,6 +3,7 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 use ieee.math_real.all;
 use work.mi_paquete.all;
+use work.vhdl_verification.all;
 
 entity tb_bloque_8 is
 end tb_bloque_8;
@@ -41,6 +42,27 @@ architecture behavior of tb_bloque_8 is
             rst    : out std_logic   --! Generated reset
             );
         end component;
+	
+	    -- datagen component
+    component datagen is
+        generic(
+            VERBOSE                  : boolean := false;                      --! Print more internal details
+            DEBUG                    : boolean := false;                      --! Print debug info (developers only)
+            STIMULI_FILE             : string  := "symbOFDM.txt";             --! File where data is stored
+            STIMULI_NIBBLES          : integer := 2;                          --! Maximum hex chars for each input data 
+            DATA_WIDTH               : integer := 8;                          --! Width of generated data
+            THROUGHPUT               : integer := 0;                          --! Output 1 valid data each THROUGHPUT cycles
+            INVALID_DATA             : datagen_invalid_data := unknown;       --! Output value when data is not valid
+            CYCLES_AFTER_LAST_VECTOR : integer := 10                          --! Number of cycles between last data and assertion of endsim
+            );
+        port(
+            clk       : in std_logic;                                 --! Align generated data to this clock
+            can_write : in std_logic;                                 --! Active high, tells datagen it can assert valid. Use for control-flow
+            data      : out std_logic_vector (DATA_WIDTH-1 downto 0); --! Generated data
+            valid     : out std_logic;                                --! Active high, indicates data is valid
+            endsim    : out std_logic                                 --! Active high, tells the other simulation processes to close their open files
+            );
+        end component;
 
 
 	signal clk         	: std_logic;
@@ -55,6 +77,11 @@ architecture behavior of tb_bloque_8 is
 	signal pilot_tx_signed : std_logic;
 	signal pilot_txrx_fin : std_logic;
 	signal valid 		: std_logic;
+	
+	signal endsim : std_logic := '0';
+	signal start_sim :std_logic := '0';
+	signal pilot_valid :std_logic;
+	signal symb_valid :std_logic;
 
         
 begin
@@ -66,11 +93,49 @@ begin
             rst_active_value => '1',
             rst_cycles => 1)
         port map (
-            endsim => '0',
+            endsim => endsim,
             clk => clk,
             rst => rst
             );
+			
+    -- Data Gen : pilots tx or prbs(0:12:end)
+    pilots_datagen : datagen
+        generic map(
+            VERBOSE                  => false,            --! Print more internal details
+            DEBUG                    => false,            --! Print debug info (developers only)
+            STIMULI_FILE             => "verification/matlab_tx_pilots.txt",   --! File where data is stored
+            STIMULI_NIBBLES          => 6,                --! Number of hex chars in the line of the data file
+            DATA_WIDTH               => 24,               --! Width of generated data = STIM_NIBB * 4hex
+            THROUGHPUT               => 1,                --! Output 1 valid data each THROUGHPUT cycles
+            INVALID_DATA             => keep,             --! Output value when data is not valid
+            CYCLES_AFTER_LAST_VECTOR => 300)              --! Number of cycles between last data and assertion of endsim
+        port map(
+            clk       => clk,                           --! Align generated data to this clock
+            can_write => start_sim,                       --! Active high, tells datagen it can assert valid. Use for control-flow
+            data      => data_pilot, 						  --! Generated data
+            valid     => pilot_valid,                        --! Active high, indicates data is valid
+            endsim    => endsim                           --! Active high, tells the other simulation processes to close their open files
+            );
  
+    -- Data Gen : pilots rx or symb(0:12:end)
+    symb_datagen : datagen
+        generic map(
+            VERBOSE                  => false,            --! Print more internal details
+            DEBUG                    => false,            --! Print debug info (developers only)
+            STIMULI_FILE             => "verification/matlab_rx_pilots.txt",   --! File where data is stored
+            STIMULI_NIBBLES          => 6,                --! Number of hex chars in the line of the data file
+            DATA_WIDTH               => 24,               --! Width of generated data = STIM_NIBB * 4hex
+            THROUGHPUT               => 1,                --! Output 1 valid data each THROUGHPUT cycles
+            INVALID_DATA             => keep,             --! Output value when data is not valid
+            CYCLES_AFTER_LAST_VECTOR => 300)              --! Number of cycles between last data and assertion of endsim
+        port map(
+            clk       => clk,                           --! Align generated data to this clock
+            can_write => start_sim,                       --! Active high, tells datagen it can assert valid. Use for control-flow
+            data      => data_symb, 						  --! Generated data
+            valid     => symb_valid,                        --! Active high, indicates data is valid
+            endsim    => endsim                           --! Active high, tells the other simulation processes to close their open files
+            );
+
     -- instantiate the unit under test (uut)
     uut_bloque_8 : bloque_8 
         port map (
@@ -92,11 +157,11 @@ begin
     stim_proc: process
     begin		
         -- reset
-        wait for 40 ns;        
+        wait for 50 ns;
         symb_ready <= '1';
 		pilot_ready <= '1';
-        wait for 20 us;
-        
+		wait for 10 ns;
+        start_sim <= '1';
     end process;
 
 end;

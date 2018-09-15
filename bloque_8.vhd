@@ -75,7 +75,7 @@ begin
 			cont_ended => p_pilot_txrx_fin
 			);
 
-    comb : process(rst, enable, symb_ready, pilot_ready, p_pilot_txrx_fin)
+    comb : process(rst, enable, symb_ready, pilot_ready, p_pilot_txrx_fin, data_symb, data_pilot)
     begin
 		-- Enable condition & p_valid condition
 		if (symb_ready = '1') and (pilot_ready = '1') and (p_pilot_txrx_fin = '0') then
@@ -116,10 +116,8 @@ begin
 			addr_pilot <= p_addr;
 			valid <= p_valid;
 			pilot_txrx_fin <= p_pilot_txrx_fin;
-			pilot_rx.re <= p_pilot_rx.re;
-			pilot_rx.im <= p_pilot_rx.im;
-			spilot_rx.re <= p_pilot_rx.re;
-			spilot_rx.im <= p_pilot_rx.im;
+			pilot_rx <= p_pilot_rx;
+			spilot_rx<= p_pilot_rx;
 			pilot_tx_signed <= p_pilot_tx_signed;
 			spilot_tx_signed <= p_pilot_tx_signed;
         end if;

@@ -41,28 +41,25 @@ architecture behavioral of bloque_8 is
 			);
 		end component; 
     
-    signal p_cont_ena   : std_logic := '0';
-    signal cont_ena     : std_logic := '0';
-    
-    signal addr_data 	: std_logic_vector(10 downto 0);
-    signal data_readed  : std_logic := '0';
-    
-    signal p_data_valid : std_logic := '0'; 
-    signal data_valid 	: std_logic := '0';
-	
+    signal enable	: std_logic := '0';
+    signal addr 	: std_logic_vector(10 downto 0);
+	signal p_addr 	: std_logic_vector(10 downto 0);
+    signal p_valid	: std_logic := '0';
 	signal p_pilot_txrx_fin : std_logic := '0';
-        
+	
+    signal spilot_rx : complex12;
+	signal p_pilot_rx : complex12;
+	signal spilot_tx_signed : std_logic;
+	signal p_pilot_tx_signed : std_logic;
+	
 begin
 
-	-- Wiring input pilot rx (data_symb) to pilot_rx_out
-	pilot_rx.re <= data_symb(23 downto 12);
-	pilot_rx.im <= data_symb(11 downto 0);
-	
-	-- Wiring as well the sign bit to the pilot_tx_signed
-	pilot_tx_signed <= data_pilot(23);
-	
-	-- Wiring data_valid to valid output port
-	valid <= data_valid;
+--	-- Wiring input pilot rx (data_symb) to pilot_rx_out
+--	pilot_rx.re <= data_symb(23 downto 12);
+--	pilot_rx.im <= data_symb(11 downto 0);
+--	
+--	-- Wiring as well the sign bit to the pilot_tx_signed
+--	pilot_tx_signed <= data_pilot(23);
 
 	uut_cont_N_i_M : cont_N_i_M
 		generic map( 
@@ -73,46 +70,59 @@ begin
 		port map(
 			clk => clk,
 			rst => rst,
-			enable => cont_ena,
-			counter => addr_data,
-			cont_ended => data_readed
+			enable => enable,
+			counter => p_addr,
+			cont_ended => p_pilot_txrx_fin
 			);
 
-    comb : process(rst, symb_ready, pilot_ready, cont_ena, data_readed)
+    comb : process(rst, enable, symb_ready, pilot_ready, p_pilot_txrx_fin)
     begin
-        if (symb_ready = '1') and (pilot_ready = '1') then
-            p_cont_ena <= '1';
+		-- Enable condition & p_valid condition
+		if (symb_ready = '1') and (pilot_ready = '1') and (p_pilot_txrx_fin = '0') then
+			-- Counter enable conditions
+			enable <= '1';
+			p_valid <= '1';
+			-- Getting data for outputting
+			p_pilot_rx.re <= data_symb(23 downto 12);
+			p_pilot_rx.im <= data_symb(11 downto 0);
+			p_pilot_tx_signed <= data_pilot(23);
 		else
-			p_cont_ena <= '0';
-        end if;
-        
-        if((symb_ready = '1') and (pilot_ready = '1') and (cont_ena = '1')) then
-            if (data_readed = '1') then
-                p_data_valid <= '0';
-                p_cont_ena <= '0';
-				p_pilot_txrx_fin <= '1';
-            else
-                p_data_valid <= '1';
-            end if;
-        end if;
+			enable <= '0';
+			p_valid <= '0';
+			p_pilot_rx.re <= spilot_rx.re;
+			p_pilot_rx.im <= spilot_rx.im;
+			p_pilot_tx_signed <= spilot_tx_signed ;
+		end if;
+		
     end process comb;
 
     sync : process(rst, clk)
     begin
         if (rst = '1') then
-            cont_ena <= '0';
+			addr <= (others=>'0');
+			addr_symb <= (others=>'0');
+			addr_pilot <= (others=>'0');
+			valid <= '0';
 			pilot_txrx_fin <= '0';
-            
+			pilot_rx.re <= (others=>'0');
+			pilot_rx.im <= (others=>'0');
+			pilot_tx_signed <= '0';
+			spilot_rx.re <= (others=>'0');
+			spilot_rx.im <= (others=>'0');
+			spilot_tx_signed <= '0';
         elsif (rising_edge(clk)) then
-            cont_ena <= p_cont_ena;
-            data_valid <= p_data_valid;
+			addr <= p_addr;
+			addr_symb <= p_addr;
+			addr_pilot <= p_addr;
+			valid <= p_valid;
 			pilot_txrx_fin <= p_pilot_txrx_fin;
-            
+			pilot_rx.re <= p_pilot_rx.re;
+			pilot_rx.im <= p_pilot_rx.im;
+			spilot_rx.re <= p_pilot_rx.re;
+			spilot_rx.im <= p_pilot_rx.im;
+			pilot_tx_signed <= p_pilot_tx_signed;
+			spilot_tx_signed <= p_pilot_tx_signed;
         end if;
     end process sync;
     
-    -- Concurrent
-    addr_symb <= addr_data;
-    addr_pilot <= addr_data;
-
 end behavioral;

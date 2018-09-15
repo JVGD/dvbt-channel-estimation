@@ -1,3 +1,4 @@
+#!/bin/bash
 echo -n "Verifying bloque_2 output, showing differences...   "
 diff -iu matlab_symbOFDM.txt bloque_2_generated.txt
 echo "... Done!"

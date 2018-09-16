@@ -79,19 +79,19 @@ begin
     sync : process(rst, clk)
     begin
         if (rst = '1') then
-			addr_symb <= (others=>'0');
-			addr_pilot <= (others=>'0');
 			valid <= '0';
 			fin <= '0';
         elsif (rising_edge(clk)) then
-			addr_symb <= addr;
-			addr_pilot <= addr;
 			valid <= p_valid;
 			fin <= p_fin;
         end if;
     end process sync;
 
-	-- Getting data for outputting
+	-- Addrs
+	addr_symb <= addr;
+	addr_pilot <= addr;
+	
+	-- Getting data for outputting	
 	pilot_rx.re <= data_symb(23 downto 12);
 	pilot_rx.im <= data_symb(11 downto 0);
 	pilot_tx_signed <= data_pilot(23);

@@ -328,13 +328,12 @@ begin
             doutb => data_pilots_b78
             );
 	
-	-- For generating data to tb_bloque 8
-	ver_bloque_8_data_pilot : datawrite
+	ver_bloque_8_tx_pilots : datawrite
 		generic map(
 			SIMULATION_LABEL => "datawrite",            --! Allow to separate messages from different instances in SIMULATION
 			VERBOSE => false,                          	--! Print more internal details
 			DEBUG => false,                          	--! Print debug info (developers only)        
-			OUTPUT_FILE => "verification/bloque_8_data_pilot_generated.txt",    --! File where data will be stored
+			OUTPUT_FILE => "verification/bloque_8_tx_pilots.txt",    --! File where data will be stored
 			OUTPUT_NIBBLES => 6,                        --! Hex chars on each output line 
 			DATA_WIDTH => 24                            --! Width of input data
 			)
@@ -345,13 +344,12 @@ begin
 			endsim => '0'           --! Active high, tells the process to close its open files
 			);
 
-	-- For generating data to tb_bloque 8
-	ver_bloque_8_data_symb : datawrite
+	ver_bloque_8_rx_pilots : datawrite
 		generic map(
 			SIMULATION_LABEL => "datawrite",            --! Allow to separate messages from different instances in SIMULATION
 			VERBOSE => false,                          	--! Print more internal details
 			DEBUG => false,                          	--! Print debug info (developers only)        
-			OUTPUT_FILE => "verification/bloque_8_data_symb_generated.txt",    --! File where data will be stored
+			OUTPUT_FILE => "verification/bloque_8_rx_pilots.txt",    --! File where data will be stored
 			OUTPUT_NIBBLES => 6,                        --! Hex chars on each output line 
 			DATA_WIDTH => 24                            --! Width of input data
 			)

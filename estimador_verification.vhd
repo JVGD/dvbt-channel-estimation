@@ -332,22 +332,6 @@ begin
             write_fin_b6 => ready_pilots_b68
             );
 			
-	ver_bloque_6_tx_pilots : datawrite
-		generic map(
-			SIMULATION_LABEL => "datawrite",            --! Allow to separate messages from different instances in SIMULATION
-			VERBOSE => false,                          	--! Print more internal details
-			DEBUG => false,                          	--! Print debug info (developers only)        
-			OUTPUT_FILE => "verification/bloque_6_tx_pilots.txt",    --! File where data will be stored
-			OUTPUT_NIBBLES => 6,                        --! Hex chars on each output line 
-			DATA_WIDTH => 24                            --! Width of input data
-			)
-		port map(
-			clk => clk,             --! Will sample input on rising_edge of this clock
-			data => data_b67, 		--! Data to write to file
-			valid  => write_en_b67,    --! Active high, indicates data is valid
-			endsim => '0'           --! Active high, tells the process to close its open files
-			);
-			
 	uut_bloque_7 : bloque_7 
         port map (
             clka => clk,

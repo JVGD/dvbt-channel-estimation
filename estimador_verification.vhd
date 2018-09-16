@@ -245,7 +245,7 @@ begin
 			SIMULATION_LABEL => "datawrite",            --! Allow to separate messages from different instances in SIMULATION
 			VERBOSE => false,                          	--! Print more internal details
 			DEBUG => false,                          	--! Print debug info (developers only)        
-			OUTPUT_FILE => "verification/bloque_2_generated.txt",    --! File where data will be stored
+			OUTPUT_FILE => "verification/bloque_2_rx_symb.txt",    --! File where data will be stored
 			OUTPUT_NIBBLES => 6,                        --! Hex chars on each output line 
 			DATA_WIDTH => 24                            --! Width of input data
 			)
@@ -267,6 +267,22 @@ begin
             rst_b3       => rst,
             write_fin_b3 => ready_symb_b38
             );
+			
+	ver_bloque_3_rx_pilots : datawrite
+		generic map(
+			SIMULATION_LABEL => "datawrite",            --! Allow to separate messages from different instances in SIMULATION
+			VERBOSE => false,                          	--! Print more internal details
+			DEBUG => false,                          	--! Print debug info (developers only)        
+			OUTPUT_FILE => "verification/bloque_3_rx_symb.txt",    --! File where data will be stored
+			OUTPUT_NIBBLES => 6,                        --! Hex chars on each output line 
+			DATA_WIDTH => 24                            --! Width of input data
+			)
+		port map(
+			clk => clk,             --! Will sample input on rising_edge of this clock
+			data => data_b34, 		--! Data to write to file
+			valid  => write_en_b34,    --! Active high, indicates data is valid
+			endsim => '0'           --! Active high, tells the process to close its open files
+			);
 
     uut_bloque_4 : bloque_4 
         port map (
@@ -293,7 +309,7 @@ begin
 			SIMULATION_LABEL => "datawrite",            --! Allow to separate messages from different instances in SIMULATION
 			VERBOSE => false,                          	--! Print more internal details
 			DEBUG => false,                          	--! Print debug info (developers only)        
-			OUTPUT_FILE => "verification/bloque_5_generated.txt", --! File where data will be stored
+			OUTPUT_FILE => "verification/bloque_5_prbs.txt", --! File where data will be stored
 			OUTPUT_NIBBLES => 1,                        --! Hex chars on each output line 
 			DATA_WIDTH => 4                            --! Width of input data
 			)
@@ -304,7 +320,6 @@ begin
 			endsim => '0'           	--! Active high, tells the process to close its open files
 			);
 			
-            
 	uut_bloque_6 : bloque_6 
         port map (
             clk_b6  => clk,
@@ -316,6 +331,22 @@ begin
             write_en_b6 => write_en_b67,
             write_fin_b6 => ready_pilots_b68
             );
+			
+	ver_bloque_6_tx_pilots : datawrite
+		generic map(
+			SIMULATION_LABEL => "datawrite",            --! Allow to separate messages from different instances in SIMULATION
+			VERBOSE => false,                          	--! Print more internal details
+			DEBUG => false,                          	--! Print debug info (developers only)        
+			OUTPUT_FILE => "verification/bloque_6_tx_pilots.txt",    --! File where data will be stored
+			OUTPUT_NIBBLES => 6,                        --! Hex chars on each output line 
+			DATA_WIDTH => 24                            --! Width of input data
+			)
+		port map(
+			clk => clk,             --! Will sample input on rising_edge of this clock
+			data => data_b67, 		--! Data to write to file
+			valid  => write_en_b67,    --! Active high, indicates data is valid
+			endsim => '0'           --! Active high, tells the process to close its open files
+			);
 			
 	uut_bloque_7 : bloque_7 
         port map (

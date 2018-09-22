@@ -138,22 +138,22 @@ architecture behavioral of estimador_verification is
 			);
 		end component;
 	
---	-- It stores the equalized pilots in a DPRAM before
---	-- the interpolator, so later the interpolator can
---	-- fetch them properly
---	component bloque_10
---		port(
---			clk         : in std_logic;
---			rst         : in std_logic; 
---			pilot_eq 	: in complex12;
---			pilot_eq_valid : in std_logic;
---			pilot_addr  : out std_logic_vector(7 downto 0);
---			pilot_data  : out std_logic_vector(23 downto 0);
---			pilot_data_valid : out std_logic;
---			pilot_write_fin : out std_logic
---			);
---		end component;
---	
+	-- It stores the equalized pilots in a DPRAM before
+	-- the interpolator, so later the interpolator can
+	-- fetch them properly
+	component bloque_10
+		port(
+			clk         : in std_logic;
+			rst         : in std_logic; 
+			pilot_eq 	: in complex12;
+			pilot_eq_valid : in std_logic;
+			pilot_addr  : out std_logic_vector(7 downto 0);
+			pilot_data  : out std_logic_vector(23 downto 0);
+			pilot_data_valid : out std_logic;
+			pilot_write_fin : out std_logic
+			);
+		end component;
+	
 --	-- DPRAM for storing equalized pilots for the interpolator
 --	component bloque_11
 --		port(
@@ -215,14 +215,14 @@ architecture behavioral of estimador_verification is
 	-- Signal Block 9 to Block 10
 	signal pilot_est_b910 : complex12;
 	
---	-- Signal Block 10 to Block 11
---	signal pilot_addr_b1011 : std_logic_vector(7 downto 0);
---	signal pilot_data_b1011 : std_logic_vector(23 downto 0);
---	signal write_en_b1011 : std_logic;
---	
---	-- Signal Block 10 to Block 12
---	signal pilot_write_fin_b1012 : std_logic := '0';
---	
+	-- Signal Block 10 to Block 11
+	signal pilot_addr_b1011 : std_logic_vector(7 downto 0);
+	signal pilot_data_b1011 : std_logic_vector(23 downto 0);
+	signal write_en_b1011 : std_logic;
+	
+	-- Signal Block 10 to Block 12
+	signal pilot_write_fin_b1012 : std_logic := '0';
+	
 --	-- Signal Block 11 to 12
 --	signal pilot_addr_b1112 : std_logic_vector(7 downto 0);
 --	signal pilot_data_b1112 : std_logic_vector(23 downto 0);
@@ -414,18 +414,18 @@ begin
 			endsim => '0'           --! Active high, tells the process to close its open files
 			);
 	
---	uut_bloque_10 : bloque_10
---		port map(
---			clk => clk,
---			rst => rst,
---			pilot_eq => pilot_eq_b910,
---			pilot_eq_valid => valid_b810,
---			pilot_addr => pilot_addr_b1011,
---			pilot_data => pilot_data_b1011,
---			pilot_data_valid => write_en_b1011,
---			pilot_write_fin => pilot_write_fin_b1012
---			);
---	
+	uut_bloque_10 : bloque_10
+		port map(
+			clk => clk,
+			rst => rst,
+			pilot_eq => pilot_est_b910,
+			pilot_eq_valid => valid_b810,
+			pilot_addr => pilot_addr_b1011,
+			pilot_data => pilot_data_b1011,
+			pilot_data_valid => write_en_b1011,
+			pilot_write_fin => pilot_write_fin_b1012
+			);
+	
 --	uut_bloque_11 : bloque_11
 --		port map(
 --			clka => clk,

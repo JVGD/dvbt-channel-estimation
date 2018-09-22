@@ -39,67 +39,51 @@ architecture behavioral of bloque_10 is
 			cont_ended : out std_logic
 			);
 		end component; 
-    
-    signal p_enable : std_logic := '0';
-    signal enable : std_logic := '0';
-	signal p_pilot_data : complex12 := (re => (others=>'0'), im => (others=>'0'));
-	signal s_pilot_write_fin : std_logic;
+
+	signal enable : std_logic;
+	signal p_enable : std_logic;
+	signal p_pilot_data  : std_logic_vector(23 downto 0);
 	signal p_pilot_data_valid : std_logic;
+
         
 begin
 
 	uut_cont_N_i_M : cont_N_i_M
 		generic map( 
 			N => 0,
-			i => 1, -- counter step count
-			M => 142  -- counter end number
+			i => 1, 	-- counter step count
+			M => 142  	-- counter end number
 			)
 		port map(
 			clk => clk,
 			rst => rst,
 			enable => enable,
 			counter => pilot_addr,
-			cont_ended => s_pilot_write_fin
+			cont_ended => pilot_write_fin
 			);
 
-    comb : process(rst, pilot_eq_valid, enable, pilot_eq)
+    comb : process(rst, pilot_eq_valid, pilot_eq)
     begin
-        if (pilot_eq_valid = '1') then
-            p_enable <= '1';
-			p_pilot_data <= pilot_eq;	
-		elsif (pilot_eq_valid = '0') then
-			p_enable <= '0';
-        end if;
-        
-        if (enable = '1') then
-            if (s_pilot_write_fin = '1') then
-                p_enable <= '0';
-				p_pilot_data_valid <= '0';
-			else
-				p_pilot_data_valid <= '1';
-            end if;
-		else
-			p_pilot_data_valid <= '0';
-        end if;
+		-- Non conditional part
+		p_enable <= pilot_eq_valid;
+		p_pilot_data_valid <= pilot_eq_valid;
+		p_pilot_data(23 downto 12) <= pilot_eq.re;
+		p_pilot_data(11 downto 0) <= pilot_eq.im;
 		
     end process comb;
 
     sync : process(rst, clk)
     begin
         if (rst = '1') then
-            enable <= '0';
-			pilot_data <= (others=> '0');
+            pilot_data <= (others=>'0');
 			pilot_data_valid <= '0';
-            
+			enable <= '0';
         elsif (rising_edge(clk)) then
-            enable <= p_enable;
-			pilot_data(23 downto 12) <= p_pilot_data.re;
-            pilot_data(11 downto 0) <= p_pilot_data.im;
+			pilot_data <= p_pilot_data;
 			pilot_data_valid <= p_pilot_data_valid;
+			enable <= p_enable;
         end if;
     end process sync;
 
-	-- Concurrent
-	pilot_write_fin <= s_pilot_write_fin;
 
 end behavioral;

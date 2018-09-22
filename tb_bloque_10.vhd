@@ -33,6 +33,7 @@ architecture behavioral of tb_bloque_10 is
 			pilot_eq_valid : in std_logic;
 			pilot_addr  : out std_logic_vector(7 downto 0);
 			pilot_data  : out std_logic_vector(23 downto 0);
+			pilot_data_valid : out std_logic;
 			pilot_write_fin : out std_logic
 			);
 		end component;
@@ -47,6 +48,7 @@ architecture behavioral of tb_bloque_10 is
 	signal pilot_addr  : std_logic_vector(7 downto 0);
 	signal pilot_data  : std_logic_vector(23 downto 0);
 	signal pilot_write_fin : std_logic;
+	signal pilot_data_valid : std_logic;
 	
 
 begin
@@ -72,12 +74,18 @@ begin
 			pilot_eq_valid => pilot_eq_valid,
 			pilot_addr  => pilot_addr,
 			pilot_data  => pilot_data,
-			pilot_write_fin => pilot_write_fin
+			pilot_write_fin => pilot_write_fin,
+			pilot_data_valid => pilot_data_valid
 			);
 	
 	-- stimulus process
 	stim_proc: process
 	begin
+		
+		pilot_eq_valid <= '0'; 
+		pilot_eq.re <= (others=>'0'); -- d"1.562500" b"000000011001"
+		pilot_eq.im <= (others=>'0'); -- d"-0.375000" b"111111111010"
+
 		wait for 50 ns;
 		pilot_eq_valid <= '1'; 
 		pilot_eq.re <= x"019"; -- d"1.562500" b"000000011001"
@@ -792,6 +800,12 @@ begin
 		pilot_eq_valid <= '1'; 
 		pilot_eq.re <= x"005"; -- d"0.312500" b"000000000101"
 		pilot_eq.im <= x"008"; -- d"0.500000" b"000000001000"
+		
+		wait for 10 ns;
+		pilot_eq_valid <= '0'; 
+		pilot_eq.re <= (others=>'0'); -- d"1.562500" b"000000011001"
+		pilot_eq.im <= (others=>'0'); -- d"-0.375000" b"111111111010"		
+		
 		wait;
 	end process;
 	

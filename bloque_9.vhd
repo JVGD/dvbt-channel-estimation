@@ -7,7 +7,7 @@ entity bloque_9 is
 	port(
 		pilot_signed : in std_logic;
 		pilot_rx : in complex12;
-		pilot_eq : out complex12
+		pilot_est : out complex12
 	);
 end bloque_9;
 
@@ -33,8 +33,8 @@ begin
 		end if;
 	end process;
 	
-	pilot_eq.re <= result.re(15 downto 4); -- taking central part only
-	pilot_eq.im <= result.im(15 downto 4); -- taking central part only
+	pilot_est.re <= result.re(15 downto 4); -- taking central part only
+	pilot_est.im <= result.im(15 downto 4); -- taking central part only
 	
 end behavioral;
 

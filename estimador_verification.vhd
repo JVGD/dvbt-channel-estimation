@@ -127,17 +127,17 @@ architecture behavioral of estimador_verification is
 			);
         end component;
 	
---	-- It divides pilot_rx by +/- 4/3 = +/-0.75
---	-- depending on the pilot_signed (pilot_tx sign)
---	-- It returns the equalized pilot pilot_eq
---	component bloque_9
---		port(
---			pilot_signed : in std_logic;
---			pilot_rx : in complex12;
---			pilot_eq : out complex12
---			);
---		end component;
---	
+	-- It divides pilot_rx by +/- 4/3 = +/-0.75
+	-- depending on the pilot_signed (pilot_tx sign)
+	-- It returns the estimated pilot pilot_est
+	component bloque_9
+		port(
+			pilot_signed : in std_logic;
+			pilot_rx : in complex12;
+			pilot_est : out complex12
+			);
+		end component;
+	
 --	-- It stores the equalized pilots in a DPRAM before
 --	-- the interpolator, so later the interpolator can
 --	-- fetch them properly
@@ -212,9 +212,9 @@ architecture behavioral of estimador_verification is
 	signal pilots_txrx_fin_b810 : std_logic;		-- This signal is not used
 	signal valid_b810 : std_logic;
 	
---	-- Signal Block 9 to Block 10
---	signal pilot_eq_b910 : complex12;
---	
+	-- Signal Block 9 to Block 10
+	signal pilot_est_b910 : complex12;
+	
 --	-- Signal Block 10 to Block 11
 --	signal pilot_addr_b1011 : std_logic_vector(7 downto 0);
 --	signal pilot_data_b1011 : std_logic_vector(23 downto 0);
@@ -390,14 +390,30 @@ begin
 			pilot_txrx_fin => pilots_txrx_fin_b810,
 			valid => valid_b810
 			);
---			
---	uut_bloque_9 : bloque_9
---		port map(
---			pilot_signed => pilot_tx_signed_b89,
---			pilot_rx => pilot_rx_b89,
---			pilot_eq => pilot_eq_b910
---			);
---	
+			
+	uut_bloque_9 : bloque_9
+		port map(
+			pilot_signed => pilot_tx_signed_b89,
+			pilot_rx => pilot_rx_b89,
+			pilot_est => pilot_est_b910
+			);
+	
+	ver_bloque_9_pilots_est : datawrite
+		generic map(
+			SIMULATION_LABEL => "datawrite",            --! Allow to separate messages from different instances in SIMULATION
+			VERBOSE => false,                          	--! Print more internal details
+			DEBUG => false,                          	--! Print debug info (developers only)        
+			OUTPUT_FILE => "verification/bloque_9_pilots_est.txt",    --! File where data will be stored
+			OUTPUT_NIBBLES => 6,                        --! Hex chars on each output line 
+			DATA_WIDTH => 24                            --! Width of input data
+			)
+		port map(
+			clk => clk,             --! Will sample input on rising_edge of this clock
+			data => pilot_est_b910.re & pilot_est_b910.im,
+			valid  => valid_b810,    --! Active high, indicates data is valid
+			endsim => '0'           --! Active high, tells the process to close its open files
+			);
+	
 --	uut_bloque_10 : bloque_10
 --		port map(
 --			clk => clk,

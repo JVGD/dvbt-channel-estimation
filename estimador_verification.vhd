@@ -240,7 +240,7 @@ begin
             rst_b2      => rst
             );
 			
-	ver_bloque_2 :datawrite
+	dump_bloque_2 : datawrite
 		generic map(
 			SIMULATION_LABEL => "datawrite",            --! Allow to separate messages from different instances in SIMULATION
 			VERBOSE => false,                          	--! Print more internal details
@@ -256,7 +256,7 @@ begin
 			endsim => '0'           --! Active high, tells the process to close its open files
 			);
 
-    uut_bloque_3: bloque_3 
+    uut_bloque_3 : bloque_3 
         port map (
             data_in_b3   => data_b23,
             valid_in_b3  => valid_b23,
@@ -268,7 +268,7 @@ begin
             write_fin_b3 => ready_symb_b38
             );
 			
-	ver_bloque_3_rx_pilots : datawrite
+	dump_bloque_3_rx_pilots : datawrite
 		generic map(
 			SIMULATION_LABEL => "datawrite",            --! Allow to separate messages from different instances in SIMULATION
 			VERBOSE => false,                          	--! Print more internal details
@@ -304,7 +304,7 @@ begin
 			enable => valid_b23
 			);
 
-	ver_bloque_5 :datawrite
+	dump_bloque_5 : datawrite
 		generic map(
 			SIMULATION_LABEL => "datawrite",            --! Allow to separate messages from different instances in SIMULATION
 			VERBOSE => false,                          	--! Print more internal details
@@ -343,7 +343,7 @@ begin
             doutb => data_pilots_b78
             );
 	
-	ver_bloque_8_tx_pilots : datawrite
+	dump_bloque_8_tx_pilots : datawrite
 		generic map(
 			SIMULATION_LABEL => "datawrite",            --! Allow to separate messages from different instances in SIMULATION
 			VERBOSE => false,                          	--! Print more internal details
@@ -359,7 +359,7 @@ begin
 			endsim => '0'           --! Active high, tells the process to close its open files
 			);
 
-	ver_bloque_8_rx_pilots : datawrite
+	dump_bloque_8_rx_pilots : datawrite
 		generic map(
 			SIMULATION_LABEL => "datawrite",            --! Allow to separate messages from different instances in SIMULATION
 			VERBOSE => false,                          	--! Print more internal details
@@ -398,7 +398,7 @@ begin
 			pilot_est => pilot_est_b910
 			);
 	
-	ver_bloque_9_pilots_est : datawrite
+	dump_bloque_9_pilots_est : datawrite
 		generic map(
 			SIMULATION_LABEL => "datawrite",            --! Allow to separate messages from different instances in SIMULATION
 			VERBOSE => false,                          	--! Print more internal details

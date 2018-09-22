@@ -12,6 +12,12 @@ entity bloque_9 is
 end bloque_9;
 
 architecture behavioral of bloque_9 is
+	-- Theory
+	-- tx_pilots -->[channel or est_pilots]--> rx_pilots
+	-- rx_pilots = est_pilots * tx_pilots 
+	-- est_pilots =  rx_pilots / tx_pilots 
+	-- est_pilots =  rx_pilots * tx_pilots_inv
+	-- est_pilots =  (a +i*b)* (c + i*0) = (a*c +i b*c)
 	
 	-- pilot / (4/3) = pilot * 3/4 = pilot * 0.75
 	constant pilot_neg : std_logic_vector(11 downto 0):= "111111110100"; -- -0.75

@@ -42,8 +42,8 @@ package body mi_paquete is
 
     -- Funcion interpolar de prueba
     function interpolar (
-        A : complex12; 
-        B : complex12; 
+        A : complex12; -- pilot inf
+        B : complex12; -- pilot sup
         coef : std_logic_vector(7 downto 0)) 
         return complex12 is 
        

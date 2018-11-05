@@ -73,7 +73,7 @@ begin
 
 			when inf => 
 				-- reading pilot inf
-				addr <= addr_cont;
+				--addr <= addr_cont;
 				--TODO: to complex12
 				
 				-- next state
@@ -82,7 +82,7 @@ begin
 			when sup => 
 				-- reading pilot sup
 				nenable <= '0';
-				addr <= addr_cont;
+				--addr <= addr_cont;
 				--TODO: to complex12
 				--TODO: data valid out
 			
@@ -133,7 +133,7 @@ begin
 			clk => clk,
 			rst => rst,
 			enable => enable,
-			counter => addr_cont,
+			counter => addr,
 			cont_ended => ram_readed
 			);
 	

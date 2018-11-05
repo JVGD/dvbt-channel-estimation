@@ -11,6 +11,19 @@ entity tb_bloque_12 is
 end tb_bloque_12;
  
 architecture behavior of tb_bloque_12 is 
+	
+	-- DPRAM for storing equalized pilots for the interpolator
+	component dpram_b12_test
+		port(
+			clka : in  std_logic;
+			wea : in  std_logic_vector(0 downto 0);
+			addra : in  std_logic_vector(7 downto 0);
+			dina : in  std_logic_vector(23 downto 0);
+			clkb : in  std_logic;
+			addrb : in  std_logic_vector(7downto 0);
+			doutb : out  std_logic_vector(23 downto 0)
+			);
+		end component;
  
     -- component declaration for the unit under test (uut)
     component bloque_12
@@ -64,6 +77,10 @@ architecture behavior of tb_bloque_12 is
 	signal pilot_sup : complex12;
 	signal valid : std_logic;
 	signal interp_ready : std_logic;
+	
+	-- signals for DPRAM
+	signal dina : std_logic_vector(23 downto 0);
+	signal addra : std_logic_vector(7 downto 0);
     
 begin
 
@@ -93,6 +110,17 @@ begin
             clk => clk,
             rst => rst
             );
+			
+	uut_dpram : dpram_b12_test
+		port map(
+			clka => clk,
+			addra => addra,
+			dina => dina,
+			wea(0) =>  '0',
+			clkb => clk,
+			addrb => addr,
+			doutb => data
+			);
 
 --	uut_interpolador11 : interpolador11 
 --		port map (
@@ -112,8 +140,9 @@ begin
 	begin
 		-- interp ready at begin
 		interp_ready <= '1';
-		
-		wait for 30 ns;
+		ram_ready <= '0';
+
+		wait for 50 ns;
 		ram_ready <= '1';
 		
 		wait for 10 ns;
@@ -128,6 +157,42 @@ begin
 		wait for 110 ns;
 		interp_ready <= '1';
 
+		wait for 20 ns;
+		interp_ready <= '0';
+
+		wait for 110 ns;
+		interp_ready <= '1';
+		
+		wait for 20 ns;
+		interp_ready <= '0';
+
+		wait for 110 ns;
+		interp_ready <= '1';
+		
+		wait for 20 ns;
+		interp_ready <= '0';
+
+		wait for 110 ns;
+		interp_ready <= '1';
+		
+		wait for 20 ns;
+		interp_ready <= '0';
+
+		wait for 110 ns;
+		interp_ready <= '1';
+		
+		wait for 20 ns;
+		interp_ready <= '0';
+
+		wait for 110 ns;
+		interp_ready <= '1';
+		
+		wait for 20 ns;
+		interp_ready <= '0';
+
+		wait for 110 ns;
+		interp_ready <= '1';
+		
 		wait for 20 ns;
 		interp_ready <= '0';
 

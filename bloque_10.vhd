@@ -34,7 +34,7 @@ architecture behavioral of bloque_10 is
 		port(
 			clk : in std_logic;
 			rst : in std_logic;
-			enable: in std_logic;
+			enable : in std_logic;
 			counter : out std_logic_vector(natural(ceil(log2(real(M+1))))-1 downto 0);
 			cont_ended : out std_logic
 			);

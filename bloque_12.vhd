@@ -45,13 +45,11 @@ architecture behavioral of bloque_12 is
 	signal nenable : std_logic;
 	signal enable : std_logic;
 	signal ram_readed : std_logic;
-	signal addr_cont: std_logic_vector(7 downto 0);
 	
---	-- output signals
---	signal naddr : std_logic_vector(7 downto 0);
---	signal npilot_inf : complex12;
---	signal npilot_sup : complex12;
---	signal nvalid : std_logic;
+	-- output signals
+	signal npilot_inf : complex12;
+	signal npilot_sup : complex12;
+	signal nvalid : std_logic;
 
 		
 	
@@ -63,9 +61,15 @@ begin
 		-- FSM
 		case state is
 			when idle =>
+				-- signal initialization
+				npilot_inf <= (re => (others=>'0'), im => (others=>'0'));
+				npilot_sup <= (re => (others=>'0'), im => (others=>'0'));
+				nvalid <= '0';
+
+				-- next state
 				if (interp_ready = '1' and ram_ready = '1') then
-					nstate <= inf;
-					nenable <= '1';
+					nstate <= inf;		-- next state
+					nenable <= '1';		-- addr counter enable
 				else
 					nstate <= idle;
 					nenable <= '0';
@@ -73,19 +77,23 @@ begin
 
 			when inf => 
 				-- reading pilot inf
-				--addr <= addr_cont;
-				--TODO: to complex12
+				npilot_inf.re <= data(23 downto 12);
+				npilot_inf.im <= data(11 downto 0);
 				
 				-- next state
 				nstate <= sup;
 				
 			when sup => 
 				-- reading pilot sup
+				npilot_sup.re <= data(23 downto 12);
+				npilot_sup.im <= data(11 downto 0);
+				
+				-- disabling addr counter
 				nenable <= '0';
-				--addr <= addr_cont;
-				--TODO: to complex12
-				--TODO: data valid out
-			
+				
+				-- setting valid
+				nvalid <= '1';
+				
 				-- next state
 				if (interp_ready = '1' and ram_ready = '1') then
 					nstate <= send;
@@ -99,6 +107,7 @@ begin
 				if (interp_ready = '0' and ram_ready = '1') then
 					nstate <= inf;
 					nenable <= '1';
+					nvalid <= '0';
 				else
 					nstate <= send;
 				end if;
@@ -116,9 +125,15 @@ begin
         if (rst = '1') then
 			state <= idle;
 			enable <= '0';
+			pilot_inf <= (re => (others=>'0'), im => (others=>'0'));
+			pilot_sup <= (re => (others=>'0'), im => (others=>'0'));
+			valid <= '0';
         elsif (rising_edge(clk)) then
 			state <= nstate;
 			enable <= nenable;
+			pilot_inf <= npilot_inf;
+			pilot_sup <= npilot_sup; 
+			valid <= nvalid;
 		end if;
     end process sync;
 	

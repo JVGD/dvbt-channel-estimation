@@ -38,9 +38,9 @@ architecture behavioral of bloque_12 is
 		end component; 
 
 	-- FSM
-	type b12_states is (idle, inf, sup, send);
+	type b12_states is (idle, enable_counter, wait_for_data, read_data, send_data);
 	signal state, nstate : b12_states;	-- state, next state
-		
+
 	-- counter signals
 	signal nenable : std_logic;
 	signal enable : std_logic;
@@ -49,6 +49,7 @@ architecture behavioral of bloque_12 is
 	-- output signals
 	signal npilot_inf : complex12;
 	signal npilot_sup : complex12;
+	signal pilot_sup_signal : complex12;
 	signal nvalid : std_logic;
 
 		
@@ -65,51 +66,51 @@ begin
 				npilot_inf <= (re => (others=>'0'), im => (others=>'0'));
 				npilot_sup <= (re => (others=>'0'), im => (others=>'0'));
 				nvalid <= '0';
+				nenable <= '0';
 
 				-- next state
 				if (interp_ready = '1' and ram_ready = '1') then
-					nstate <= inf;		-- next state
-					nenable <= '1';		-- addr counter enable
+					nstate <= enable_counter;	-- next state
 				else
 					nstate <= idle;
-					nenable <= '0';
 				end if;
-
-			when inf => 
-				-- reading pilot inf
-				npilot_inf.re <= data(23 downto 12);
-				npilot_inf.im <= data(11 downto 0);
 				
-				-- next state
-				nstate <= sup;
+			when enable_counter => 
+				nenable <= '1';
+				nstate <= wait_for_data;
 				
-			when sup => 
+			when wait_for_data => 
+				nenable <= '0';
+				nstate <= read_data;
+				
+			when read_data => 
+				-- reading data
+				-- type readed_states is ( none, pilot_inf, pilot_sup );
+				
+				-- updating pilot inf with previous pilot sup
+				npilot_inf <= pilot_sup_signal;
+				
 				-- reading pilot sup
 				npilot_sup.re <= data(23 downto 12);
 				npilot_sup.im <= data(11 downto 0);
-				
-				-- disabling addr counter
-				nenable <= '0';
-				
-				-- setting valid
-				nvalid <= '1';
-				
+								
 				-- next state
 				if (interp_ready = '1' and ram_ready = '1') then
-					nstate <= send;
+					nstate <= send_data;
+					nvalid <= '1';
 				else
-					nstate <= sup;
+					nstate <= read_data;
+					nvalid <= '0';
 				end if;
 							
-			when send =>
+			when send_data =>
 				-- when sending data
 				-- Wait till interp start processing the data
 				if (interp_ready = '0' and ram_ready = '1') then
-					nstate <= inf;
-					nenable <= '1';
+					nstate <= enable_counter;
 					nvalid <= '0';
 				else
-					nstate <= send;
+					nstate <= send_data;
 				end if;
 				
 			when others =>
@@ -127,12 +128,14 @@ begin
 			enable <= '0';
 			pilot_inf <= (re => (others=>'0'), im => (others=>'0'));
 			pilot_sup <= (re => (others=>'0'), im => (others=>'0'));
+			pilot_sup_signal <= (re => (others=>'0'), im => (others=>'0'));
 			valid <= '0';
         elsif (rising_edge(clk)) then
 			state <= nstate;
 			enable <= nenable;
 			pilot_inf <= npilot_inf;
-			pilot_sup <= npilot_sup; 
+			pilot_sup 		 <= npilot_sup;
+			pilot_sup_signal <= npilot_sup;
 			valid <= nvalid;
 		end if;
     end process sync;

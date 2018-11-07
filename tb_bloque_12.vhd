@@ -34,7 +34,7 @@ architecture behavior of tb_bloque_12 is
 			data : in std_logic_vector(23 downto 0);
 			addr : out std_logic_vector(7 downto 0);
 			pilot_inf : out complex12;
-			pilot_sup : inout complex12;
+			pilot_sup : out complex12;
 			valid : out std_logic;
 			interp_ready : in std_logic
 			);

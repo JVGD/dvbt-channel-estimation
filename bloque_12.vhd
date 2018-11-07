@@ -12,7 +12,7 @@ entity bloque_12 is
 		data : in std_logic_vector(23 downto 0);
 		addr : out std_logic_vector(7 downto 0);
 		pilot_inf : out complex12;
-		pilot_sup : inout complex12;
+		pilot_sup : out complex12;
 		valid : out std_logic;
 		interp_ready : in std_logic
 	);
@@ -60,7 +60,7 @@ architecture behavioral of bloque_12 is
 begin
 	
     -- proceso combinacional
-    comb : process( state, ram_ready, interp_ready, waited, data, pilot_sup)
+    comb : process( state, ram_ready, interp_ready, waited, data, pilot_sup_signal)
 	begin
 		-- FSM
 		case state is
@@ -104,7 +104,7 @@ begin
 				-- next state
 				if (interp_ready = '1' and ram_ready = '1') then
 					-- updating pilot inf with previous pilot sup
-					npilot_inf <= pilot_sup;
+					npilot_inf <= pilot_sup_signal;
 					
 					-- reading pilot sup
 					npilot_sup.re <= data(23 downto 12);
@@ -151,6 +151,7 @@ begin
 			enable <= nenable;
 			pilot_inf <= npilot_inf;
 			pilot_sup <= npilot_sup;
+			pilot_sup_signal <= npilot_sup;
 			valid <= nvalid;
 			waited <= nwaited;
 		end if;

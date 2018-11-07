@@ -79,7 +79,7 @@ begin
         if (rst_b3 = '1') then
             data_out_b3 <= (others=>'0');
 			s_valid_in_b3 <= '0';
-			write_en_b3 <= '0';
+			write_en_b3 <= '1';
         elsif (rising_edge(clk_b3)) then
 			data_out_b3 <= p_data_out_b3;
 			s_valid_in_b3 <= p_valid_in_b3;

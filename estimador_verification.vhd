@@ -154,19 +154,50 @@ architecture behavioral of estimador_verification is
 			);
 		end component;
 	
---	-- DPRAM for storing equalized pilots for the interpolator
---	component bloque_11
---		port(
---			clka : in  std_logic;
---			wea : in  std_logic_vector(0 downto 0);
---			addra : in  std_logic_vector(7 downto 0);
---			dina : in  std_logic_vector(23 downto 0);
---			clkb : in  std_logic;
---			addrb : in  std_logic_vector(7downto 0);
---			doutb : out  std_logic_vector(23 downto 0)
---			);
---		end component; 
+	-- DPRAM for storing equalized pilots for the interpolator
+	component bloque_11
+		port(
+			clka : in  std_logic;
+			wea : in  std_logic_vector(0 downto 0);
+			addra : in  std_logic_vector(7 downto 0);
+			dina : in  std_logic_vector(23 downto 0);
+			clkb : in  std_logic;
+			addrb : in  std_logic_vector(7downto 0);
+			doutb : out  std_logic_vector(23 downto 0)
+			);
+		end component; 
 
+	-- It takes pilot superior and inferior from the DPRAM
+	-- and feeds them to the interpolator iteratively
+    component bloque_12
+		port(
+			clk : in std_logic;
+			rst : in std_logic;
+			ram_ready : in std_logic;
+			data : in std_logic_vector(23 downto 0);
+			addr : out std_logic_vector(7 downto 0);
+			pilot_inf : out complex12;
+			pilot_sup : out complex12;
+			valid : out std_logic;
+			interp_ready : in std_logic
+			);
+		end component;
+
+	-- Interpolation of the pilots channel and outputing
+	-- the results of the interpolation, this would be the
+	-- channel estimated, not the channel equalized
+	component interpolador11
+		port(
+			clk         : in std_logic;
+			rst         : in std_logic;
+			finished	: out std_logic;
+			sup         : in complex12;
+			inf         : in complex12;
+			valid       : in std_logic;
+			estim       : out complex12; 
+			estim_valid : out std_logic
+			);
+		end component;
     
     -- Signals of synchronism
     signal rst : std_logic;
@@ -223,12 +254,20 @@ architecture behavioral of estimador_verification is
 	-- Signal Block 10 to Block 12
 	signal pilot_write_fin_b1012 : std_logic := '0';
 	
---	-- Signal Block 11 to 12
---	signal pilot_addr_b1112 : std_logic_vector(7 downto 0);
---	signal pilot_data_b1112 : std_logic_vector(23 downto 0);
---	
---	-- For test bench
---	signal pilot_eq_teo : complex12 := (re => (others=>'0'), im => (others=>'0'));
+	-- Signal Block 11 to 12
+	signal pilot_addr_b1112 : std_logic_vector(7 downto 0);
+	signal pilot_data_b1112 : std_logic_vector(23 downto 0);
+	
+	-- Signal Block 12 to 13
+	signal pilot_inf_b1213 : complex12;
+	signal pilot_sup_b1213 : complex12;
+	signal valid_b1213 : std_logic;
+	signal interp_fin : std_logic;
+	
+	-- Signal Block 13
+	signal ch_estim : complex12;
+	signal ch_valid : std_logic;
+	
 
 begin
 	
@@ -426,16 +465,41 @@ begin
 			pilot_write_fin => pilot_write_fin_b1012
 			);
 	
---	uut_bloque_11 : bloque_11
---		port map(
---			clka => clk,
---			wea(0) =>  write_en_b1011,
---			addra => pilot_addr_b1011,
---			dina => pilot_data_b1011,
---			clkb => clk,
---			addrb => pilot_addr_b1112,
---			doutb => pilot_data_b1112
---			);
+	uut_bloque_11 : bloque_11
+		port map(
+			clka => clk,
+			wea(0) =>  write_en_b1011,
+			addra => pilot_addr_b1011,
+			dina => pilot_data_b1011,
+			clkb => clk,
+			addrb => pilot_addr_b1112,
+			doutb => pilot_data_b1112
+			);
+			
+	uut_bloque_12: bloque_12 
+		port map (
+			clk => clk,
+			rst => rst,
+			ram_ready => pilot_write_fin_b1012,
+			data => pilot_data_b1112,
+			addr => pilot_addr_b1112,
+			pilot_inf => pilot_inf_b1213,
+			pilot_sup => pilot_sup_b1213,
+			valid => valid_b1213,
+			interp_ready => interp_fin
+			);
+			
+	uut_bloque_13 : interpolador11 
+		port map (
+			clk => clk,
+			rst => rst,
+			finished => interp_fin,
+			sup => pilot_sup_b1213,
+			inf => pilot_inf_b1213,
+			valid => valid_b1213,
+			estim => ch_estim,
+			estim_valid => ch_valid
+			);	
 			
 	-- stimulus process
 	stim_proc: process

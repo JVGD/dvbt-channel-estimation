@@ -76,7 +76,7 @@ begin
     begin
         if (rst = '1') then
             pilot_data <= (others=>'0');
-			pilot_data_valid <= '0';
+			pilot_data_valid <= '1';
 			enable <= '0';
         elsif (rising_edge(clk)) then
 			pilot_data <= p_pilot_data;

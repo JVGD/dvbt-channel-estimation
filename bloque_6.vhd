@@ -90,7 +90,7 @@ begin
 			data <= (others=>'0');
 			data_out_b6 <= (others=>'0');
 			addr_out_b6 <= (others=>'0');
-			write_en_b6 <= '0';
+			write_en_b6 <= '1';
 			write_fin_b6 <= '0';
         elsif rising_edge(clk_b6) then
             write_en_b6 <= p_write_en;

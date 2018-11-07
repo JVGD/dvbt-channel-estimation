@@ -34,7 +34,7 @@ architecture behavior of tb_bloque_12 is
 			data : in std_logic_vector(23 downto 0);
 			addr : out std_logic_vector(7 downto 0);
 			pilot_inf : out complex12;
-			pilot_sup : out complex12;
+			pilot_sup : inout complex12;
 			valid : out std_logic;
 			interp_ready : in std_logic
 			);
@@ -81,6 +81,10 @@ architecture behavior of tb_bloque_12 is
 	-- signals for DPRAM
 	signal dina : std_logic_vector(23 downto 0);
 	signal addra : std_logic_vector(7 downto 0);
+	
+	-- signals for interpolator
+	signal ch_est : complex12;
+	signal ch_valid : std_logic;
     
 begin
 
@@ -97,6 +101,18 @@ begin
 			valid => valid,
 			interp_ready => interp_ready
 			);
+
+	uut_interpolador11 : interpolador11 
+		port map (
+			clk => clk,
+			finished => interp_ready,
+			rst => rst,
+			sup => pilot_sup,
+			inf => pilot_inf,
+			valid => valid,
+			estim => ch_est,
+			estim_valid => ch_valid
+			);		
 
 	-- Clock manager instance
     uut_clkmanager : clkmanager
@@ -122,83 +138,13 @@ begin
 			doutb => data
 			);
 
---	uut_interpolador11 : interpolador11 
---		port map (
---			clk => clk,
---			finished => finished,
---			rst => rst,
---			sup => datan1,
---			inf => datan,
---			valid => data_valid,
---			estim => ch_est,
---			estim_valid => ch_valid
---			);		
-
-
 	-- stimulus process
 	stim_proc: process
 	begin
-		-- interp ready at begin
-		interp_ready <= '1';
 		ram_ready <= '0';
-
 		wait for 50 ns;
 		ram_ready <= '1';
-		
-		wait for 10 ns;
-		interp_ready <= '0';
-		
-		wait for 110 ns;
-		interp_ready <= '1';
-
-		wait for 20 ns;
-		interp_ready <= '0';
-
-		wait for 110 ns;
-		interp_ready <= '1';
-
-		wait for 20 ns;
-		interp_ready <= '0';
-
-		wait for 110 ns;
-		interp_ready <= '1';
-		
-		wait for 20 ns;
-		interp_ready <= '0';
-
-		wait for 110 ns;
-		interp_ready <= '1';
-		
-		wait for 20 ns;
-		interp_ready <= '0';
-
-		wait for 110 ns;
-		interp_ready <= '1';
-		
-		wait for 20 ns;
-		interp_ready <= '0';
-
-		wait for 110 ns;
-		interp_ready <= '1';
-		
-		wait for 20 ns;
-		interp_ready <= '0';
-
-		wait for 110 ns;
-		interp_ready <= '1';
-		
-		wait for 20 ns;
-		interp_ready <= '0';
-
-		wait for 110 ns;
-		interp_ready <= '1';
-		
-		wait for 20 ns;
-		interp_ready <= '0';
-
-		wait for 110 ns;
-		interp_ready <= '1';
-		
+		wait for 2 us;
 		wait;
 	end process;
 

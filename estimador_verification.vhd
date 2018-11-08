@@ -199,6 +199,8 @@ architecture behavioral of estimador_verification is
 			);
 		end component;
     
+	-- Block that writes the pilots and the interpolated
+	-- data in order to produce the estimated channel
 	component bloque_14
 		port(
 			clk : in std_logic;

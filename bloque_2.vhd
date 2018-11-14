@@ -51,7 +51,8 @@ architecture behavioral of bloque_2 is
         end component;
 
     -- clkmanager signals
-    signal s_endsim : std_logic := '0';    -- esta es IN para manejar el clk
+    signal s_endsim_clk : std_logic := '0';    -- esta es IN para manejar el clk
+	signal s_endsim_gen : std_logic := '0';    -- esta es IN para manejar el clk
 	signal s_rst : std_logic;
     signal s_clk : std_logic := '1';
     
@@ -74,9 +75,9 @@ begin
             rst_cycles => 2
 			)
         port map (
-            endsim => s_endsim,
-            clk => s_clk,
-            rst => s_rst
+			endsim => s_endsim_clk,
+			clk => s_clk,
+			rst => s_rst
             );
     
     -- Data Gen
@@ -95,7 +96,7 @@ begin
             can_write => s_can_write,                       --! Active high, tells datagen it can assert valid. Use for control-flow
             data      => s_data_b2, 						  --! Generated data
             valid     => s_valid_b2,                        --! Active high, indicates data is valid
-            endsim    => s_endsim                           --! Active high, tells the other simulation processes to close their open files
+            endsim    => s_endsim_gen                           --! Active high, tells the other simulation processes to close their open files
             );
 			
 

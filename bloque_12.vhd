@@ -60,7 +60,7 @@ architecture behavioral of bloque_12 is
 begin
 	
     -- proceso combinacional
-    comb : process( state, ram_ready, interp_ready, waited, data, pilot_sup_signal)
+    comb : process( state, ram_ready, interp_ready, waited, data, pilot_sup_signal, ram_readed)
 	begin
 		-- FSM
 		case state is
@@ -77,7 +77,11 @@ begin
 				npilot_inf.im <= data(11 downto 0);
 				
 				-- next state
-				if (interp_ready = '1' and ram_ready = '1') then
+				if (ram_readed = '1') then
+					-- when interpolation finished
+					nstate <= idle;
+				elsif (interp_ready = '1' and ram_ready = '1') then
+					-- start interpolation
 					nstate <= enable_counter;	-- next state
 				else
 					nstate <= idle;
@@ -112,7 +116,14 @@ begin
 
 					-- next state and valid
 					nstate <= send_data;
-					nvalid <= '1';
+					
+					-- valid only while it is not finished
+					if (ram_readed = '1') then
+						nvalid <= '0';
+					else
+						nvalid <= '1';
+					end if;
+					
 				else
 					nstate <= read_data;
 					nvalid <= '0';
@@ -120,8 +131,11 @@ begin
 							
 			when send_data =>
 				-- when sending data
+				-- if finished interpolation
+				if (ram_readed = '1') then
+					nstate <= idle;
 				-- Wait till interp start processing the data
-				if (interp_ready = '0' and ram_ready = '1') then
+				elsif (interp_ready = '0' and ram_ready = '1') then
 					nstate <= enable_counter;
 					nvalid <= '0';
 				else
@@ -162,7 +176,7 @@ begin
 		generic map( 
 			N => 0,
 			i => 1, 	-- counter step count
-			M => 143  	-- counter end number
+			M => 142  	-- counter end number
 			)
 		port map(
 			clk => clk,

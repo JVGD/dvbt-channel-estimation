@@ -199,6 +199,21 @@ architecture behavioral of estimador_verification is
 			);
 		end component;
     
+	component bloque_14
+		port(
+			clk : in std_logic;
+			rst : in std_logic;
+			pilot_inf : in complex12;
+			pilot_sup : in complex12;
+			pilot_valid : in std_logic;
+			interp_estim : in complex12;
+			interp_valid : in std_logic;
+			interp_fin : in std_logic;
+			ch_est : out complex12;
+			ch_valid : out std_logic
+			);
+		end component;
+		
     -- Signals of synchronism
     signal rst : std_logic;
     signal clk : std_logic;
@@ -258,15 +273,19 @@ architecture behavioral of estimador_verification is
 	signal pilot_addr_b1112 : std_logic_vector(7 downto 0);
 	signal pilot_data_b1112 : std_logic_vector(23 downto 0);
 	
-	-- Signal Block 12 to 13
-	signal pilot_inf_b1213 : complex12;
-	signal pilot_sup_b1213 : complex12;
-	signal valid_b1213 : std_logic;
-	signal interp_fin : std_logic;
+	-- Signal Block 12 to 13 and 14
+	signal pilot_inf_b121314 : complex12;
+	signal pilot_sup_b121314 : complex12;
+	signal valid_b121314 : std_logic;
+	signal interp_fin_b121314 : std_logic;
 	
-	-- Signal Block 13
+	-- Signal Block 13 to 14
+	signal interp_estim_b1314 : complex12;
+	signal interp_valid_b1314 : std_logic;
+	
+	-- Signal Block 14
 	signal ch_estim : complex12;
-	signal ch_valid : std_logic;
+	signal ch_valid: std_logic;
 	
 
 begin
@@ -483,24 +502,54 @@ begin
 			ram_ready => pilot_write_fin_b1012,
 			data => pilot_data_b1112,
 			addr => pilot_addr_b1112,
-			pilot_inf => pilot_inf_b1213,
-			pilot_sup => pilot_sup_b1213,
-			valid => valid_b1213,
-			interp_ready => interp_fin
+			pilot_inf => pilot_inf_b121314,
+			pilot_sup => pilot_sup_b121314,
+			valid => valid_b121314,
+			interp_ready => interp_fin_b121314
 			);
 			
 	uut_bloque_13 : interpolador11 
 		port map (
 			clk => clk,
 			rst => rst,
-			finished => interp_fin,
-			sup => pilot_sup_b1213,
-			inf => pilot_inf_b1213,
-			valid => valid_b1213,
-			estim => ch_estim,
-			estim_valid => ch_valid
+			finished => interp_fin_b121314,
+			sup => pilot_sup_b121314,
+			inf => pilot_inf_b121314,
+			valid => valid_b121314,
+			estim => interp_estim_b1314,
+			estim_valid => interp_valid_b1314
 			);	
 			
+	uut_bloque_14 : bloque_14
+		port map(
+			clk => clk,
+			rst => rst,
+			pilot_inf => pilot_inf_b121314,
+			pilot_sup => pilot_sup_b121314,
+			pilot_valid => valid_b121314,
+			interp_estim => interp_estim_b1314,
+			interp_valid => interp_valid_b1314,
+			interp_fin => interp_fin_b121314,
+			ch_est => ch_estim,
+			ch_valid => ch_valid
+			);
+
+	dump_bloque_14_ch_est : datawrite
+		generic map(
+			SIMULATION_LABEL => "datawrite",            --! Allow to separate messages from different instances in SIMULATION
+			VERBOSE => false,                          	--! Print more internal details
+			DEBUG => false,                          	--! Print debug info (developers only)        
+			OUTPUT_FILE => "verification/bloque_14_ch_est.txt",    --! File where data will be stored
+			OUTPUT_NIBBLES => 6,                        --! Hex chars on each output line 
+			DATA_WIDTH => 24                            --! Width of input data
+			)
+		port map(
+			clk => clk,             --! Will sample input on rising_edge of this clock
+			data => ch_estim.re & ch_estim.im,
+			valid  => ch_valid,    --! Active high, indicates data is valid
+			endsim => '0'           --! Active high, tells the process to close its open files
+			);
+
 	-- stimulus process
 	stim_proc: process
 	begin

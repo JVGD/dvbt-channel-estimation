@@ -116,6 +116,7 @@ begin
 
 					-- next state and valid
 					nstate <= send_data;
+					nvalid <= '1';
 					
 					-- valid only while it is not finished
 					if (ram_readed = '1') then

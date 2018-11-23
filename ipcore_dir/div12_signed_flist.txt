@@ -1,0 +1,13 @@
+# Output products list for <div12_signed>
+_xmsgs/pn_parser.xmsgs
+div12_signed.asy
+div12_signed.gise
+div12_signed.ngc
+div12_signed.sym
+div12_signed.vhd
+div12_signed.vho
+div12_signed.xco
+div12_signed.xise
+div12_signed_flist.txt
+div12_signed_readme.txt
+div12_signed_xmdf.tcl

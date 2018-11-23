@@ -1,0 +1,26 @@
+ISim log file
+Running: /home/ise/wkspc/dvbt-channel-estimation/estimador_verification_isim_beh.exe -intstyle ise -gui -tclbatch isim.cmd -wdb /home/ise/wkspc/dvbt-channel-estimation/estimador_verification_isim_beh.wdb 
+ISim P.20160913 (signature 0xfbc00daa)
+----------------------------------------------------------------------
+WARNING:Security:42 - Your software subscription period has lapsed. Your current version of Xilinx tools will continue to function, but you no longer qualify for Xilinx software updates or new releases.
+
+
+----------------------------------------------------------------------
+This is a Full version of ISim.
+Time resolution is 1 ps
+# onerror resume
+# wave add /
+# run 1000 ns
+Simulator is doing circuit initialization process.
+CYCLES_AFTER_LAST_VECTOR: 300                             
+datagen: NUM_CHUNKS: 1                               
+datagen: opening input filesymbOFDM.txt
+datawrite(datawrite): NUM_CHUNKS: 1                               
+datawrite(datawrite): opening output file verification/bloque_2_rx_symb.txt
+ERROR: at 0 ps: Could not openfile verification/bloque_2_rx_symb.txt of text
+ERROR: In process datawrite.vhd:datawrite_read 
+ 
+INFO: Simulator is stopped.
+# run 56 us
+INFO: Simulator is stopped.
+# exit 0

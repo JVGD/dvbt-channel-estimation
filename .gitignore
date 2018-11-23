@@ -1,0 +1,19 @@
+
+
+# All verification files
+verification/*.txt
+
+# They change every iteration
+estimador_summary.html
+iseconfig/estimador.xreport
+
+
+# Ignore all
+#*
+## But
+#!/ipcore_dir/
+#!.gitignore
+#!*.vhd
+#!verification/
+##!*verification/*
+#

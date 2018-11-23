@@ -1,1 +1,0 @@
--intstyle "ise" -incremental -lib "secureip" -o "/home/ise/wkspc/dvbt-channel-estimation/estimador_verification_isim_beh.exe" -prj "/home/ise/wkspc/dvbt-channel-estimation/estimador_verification_beh.prj" "estimador_verification" 

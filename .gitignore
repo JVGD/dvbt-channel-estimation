@@ -1,12 +1,12 @@
 
 
 # All verification files
-verification/*.txt
+VHDL/verification/*.txt
 
 # They change every iteration
-estimador_summary.html
-iseconfig/estimador.xreport
-
+VHDL/estimador_summary.html
+VHDL/iseconfig/estimador.xreport
+VHDL/_xmsgs/
 
 # Ignore all
 #*

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wave_config>
+   <wave_state>
+   </wave_state>
+   <db_ref_list>
+      <db_ref path="/home/ise/project_EDC/dvbt-channel-estimation/divider_pilot_tb_isim_beh.wdb" id="1" type="auto">
+         <top_modules>
+            <top_module name="divider_pilot_tb" />
+            <top_module name="mi_paquete" />
+            <top_module name="numeric_std" />
+            <top_module name="std_logic_1164" />
+         </top_modules>
+      </db_ref>
+   </db_ref_list>
+   <WVObjectSize size="6" />
+   <wvobject fp_name="/divider_pilot_tb/pilot_signed" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">pilot_signed</obj_property>
+      <obj_property name="ObjectShortName">pilot_signed</obj_property>
+   </wvobject>
+   <wvobject fp_name="/divider_pilot_tb/pilot_rx" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">pilot_rx</obj_property>
+      <obj_property name="ObjectShortName">pilot_rx</obj_property>
+      <obj_property name="Radix">HEXRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/divider_pilot_tb/pilot_eq_teo" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">pilot_eq_teo</obj_property>
+      <obj_property name="ObjectShortName">pilot_eq_teo</obj_property>
+      <obj_property name="Radix">HEXRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/divider_pilot_tb/pilot_eq" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">pilot_eq</obj_property>
+      <obj_property name="ObjectShortName">pilot_eq</obj_property>
+      <obj_property name="Radix">HEXRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/divider_pilot_tb/clk" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">clk</obj_property>
+      <obj_property name="ObjectShortName">clk</obj_property>
+   </wvobject>
+   <wvobject fp_name="/divider_pilot_tb/clk_period" type="other" db_ref_id="1">
+      <obj_property name="ElementShortName">clk_period</obj_property>
+      <obj_property name="ObjectShortName">clk_period</obj_property>
+      <obj_property name="Radix">HEXRADIX</obj_property>
+   </wvobject>
+</wave_config>

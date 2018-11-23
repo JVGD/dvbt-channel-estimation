@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wave_config>
+   <wave_state>
+   </wave_state>
+   <db_ref_list>
+      <db_ref path="/home/ise/project_EDC/dvbt-channel-estimation/bloque_genera_sybms_and_pilots_tb_isim_beh.wdb" id="1" type="auto">
+         <top_modules>
+            <top_module name="bloque_genera_sybms_and_pilots_tb" />
+            <top_module name="image_pkg" />
+            <top_module name="mi_paquete" />
+            <top_module name="numeric_std" />
+            <top_module name="std_logic_1164" />
+            <top_module name="std_logic_arith" />
+            <top_module name="std_logic_textio" />
+            <top_module name="std_logic_unsigned" />
+            <top_module name="textio" />
+            <top_module name="txt_util" />
+            <top_module name="vhdl_verification" />
+         </top_modules>
+      </db_ref>
+   </db_ref_list>
+   <WVObjectSize size="12" />
+   <wvobject fp_name="/bloque_genera_sybms_and_pilots_tb/s_clk" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">s_clk</obj_property>
+      <obj_property name="ObjectShortName">s_clk</obj_property>
+   </wvobject>
+   <wvobject fp_name="/bloque_genera_sybms_and_pilots_tb/s_rst" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">s_rst</obj_property>
+      <obj_property name="ObjectShortName">s_rst</obj_property>
+   </wvobject>
+   <wvobject fp_name="/bloque_genera_sybms_and_pilots_tb/s_addr_symb" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">s_addr_symb[10:0]</obj_property>
+      <obj_property name="ObjectShortName">s_addr_symb[10:0]</obj_property>
+      <obj_property name="Radix">HEXRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/bloque_genera_sybms_and_pilots_tb/s_data_symb" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">s_data_symb[23:0]</obj_property>
+      <obj_property name="ObjectShortName">s_data_symb[23:0]</obj_property>
+      <obj_property name="Radix">HEXRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/bloque_genera_sybms_and_pilots_tb/s_symb_ready" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">s_symb_ready</obj_property>
+      <obj_property name="ObjectShortName">s_symb_ready</obj_property>
+   </wvobject>
+   <wvobject fp_name="/bloque_genera_sybms_and_pilots_tb/s_addr_pilot" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">s_addr_pilot[10:0]</obj_property>
+      <obj_property name="ObjectShortName">s_addr_pilot[10:0]</obj_property>
+      <obj_property name="Radix">HEXRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/bloque_genera_sybms_and_pilots_tb/s_data_pilot" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">s_data_pilot[23:0]</obj_property>
+      <obj_property name="ObjectShortName">s_data_pilot[23:0]</obj_property>
+      <obj_property name="Radix">HEXRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/bloque_genera_sybms_and_pilots_tb/s_pilot_ready" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">s_pilot_ready</obj_property>
+      <obj_property name="ObjectShortName">s_pilot_ready</obj_property>
+   </wvobject>
+   <wvobject fp_name="/bloque_genera_sybms_and_pilots_tb/pilot_rx" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">pilot_rx</obj_property>
+      <obj_property name="ObjectShortName">pilot_rx</obj_property>
+      <obj_property name="Radix">HEXRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/bloque_genera_sybms_and_pilots_tb/pilot_rx_teo" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">pilot_rx_teo</obj_property>
+      <obj_property name="ObjectShortName">pilot_rx_teo</obj_property>
+      <obj_property name="Radix">HEXRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/bloque_genera_sybms_and_pilots_tb/pilot_tx_signed" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">pilot_tx_signed</obj_property>
+      <obj_property name="ObjectShortName">pilot_tx_signed</obj_property>
+   </wvobject>
+   <wvobject fp_name="/bloque_genera_sybms_and_pilots_tb/pilot_tx_signed_teo" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">pilot_tx_signed_teo</obj_property>
+      <obj_property name="ObjectShortName">pilot_tx_signed_teo</obj_property>
+   </wvobject>
+</wave_config>

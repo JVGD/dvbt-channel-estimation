@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wave_config>
+   <wave_state>
+   </wave_state>
+   <db_ref_list>
+      <db_ref path="/home/ise/project_EDC/dvbt-channel-estimation/estimador_verification_isim_beh.wdb" id="1" type="auto">
+         <top_modules>
+            <top_module name="estimador_verification" />
+            <top_module name="image_pkg" />
+            <top_module name="mi_paquete" />
+            <top_module name="numeric_std" />
+            <top_module name="std_logic_1164" />
+            <top_module name="std_logic_arith" />
+            <top_module name="std_logic_textio" />
+            <top_module name="textio" />
+            <top_module name="txt_util" />
+            <top_module name="vhdl_verification" />
+         </top_modules>
+      </db_ref>
+   </db_ref_list>
+   <WVObjectSize size="4" />
+   <wvobject fp_name="/estimador_verification/rst" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">rst</obj_property>
+      <obj_property name="ObjectShortName">rst</obj_property>
+   </wvobject>
+   <wvobject fp_name="/estimador_verification/clk" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">clk</obj_property>
+      <obj_property name="ObjectShortName">clk</obj_property>
+   </wvobject>
+   <wvobject fp_name="/estimador_verification/valid_b23" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">valid_b23</obj_property>
+      <obj_property name="ObjectShortName">valid_b23</obj_property>
+   </wvobject>
+   <wvobject fp_name="/estimador_verification/data_b23" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">data_b23[23:0]</obj_property>
+      <obj_property name="ObjectShortName">data_b23[23:0]</obj_property>
+      <obj_property name="Radix">HEXRADIX</obj_property>
+   </wvobject>
+</wave_config>

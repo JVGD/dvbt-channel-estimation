@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wave_config>
+   <wave_state>
+   </wave_state>
+   <db_ref_list>
+      <db_ref path="/home/ise/wkspc/dvbt-channel-estimation/tb_bloque_12_isim_beh.wdb" id="1" type="auto">
+         <top_modules>
+            <top_module name="math_real" />
+            <top_module name="mi_paquete" />
+            <top_module name="numeric_std" />
+            <top_module name="std_logic_1164" />
+            <top_module name="std_logic_arith" />
+            <top_module name="std_logic_textio" />
+            <top_module name="std_logic_unsigned" />
+            <top_module name="tb_bloque_12" />
+            <top_module name="textio" />
+         </top_modules>
+      </db_ref>
+   </db_ref_list>
+   <WVObjectSize size="11" />
+   <wvobject fp_name="/tb_bloque_12/clk" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">clk</obj_property>
+      <obj_property name="ObjectShortName">clk</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_bloque_12/rst" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">rst</obj_property>
+      <obj_property name="ObjectShortName">rst</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_bloque_12/ram_ready" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">ram_ready</obj_property>
+      <obj_property name="ObjectShortName">ram_ready</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_bloque_12/data" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">data[23:0]</obj_property>
+      <obj_property name="ObjectShortName">data[23:0]</obj_property>
+      <obj_property name="Radix">HEXRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_bloque_12/addr" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">addr[7:0]</obj_property>
+      <obj_property name="ObjectShortName">addr[7:0]</obj_property>
+      <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_bloque_12/pilot_inf" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">pilot_inf</obj_property>
+      <obj_property name="ObjectShortName">pilot_inf</obj_property>
+      <obj_property name="Radix">HEXRADIX</obj_property>
+      <obj_property name="UseCustomSignalColor">true</obj_property>
+      <obj_property name="CustomSignalColor">#ff00ff</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_bloque_12/pilot_sup" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">pilot_sup</obj_property>
+      <obj_property name="ObjectShortName">pilot_sup</obj_property>
+      <obj_property name="Radix">HEXRADIX</obj_property>
+      <obj_property name="UseCustomSignalColor">true</obj_property>
+      <obj_property name="CustomSignalColor">#ff00ff</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_bloque_12/valid" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">valid</obj_property>
+      <obj_property name="ObjectShortName">valid</obj_property>
+      <obj_property name="UseCustomSignalColor">true</obj_property>
+      <obj_property name="CustomSignalColor">#ff00ff</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_bloque_12/interp_ready" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">interp_ready</obj_property>
+      <obj_property name="ObjectShortName">interp_ready</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_bloque_12/ch_est" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">ch_est</obj_property>
+      <obj_property name="ObjectShortName">ch_est</obj_property>
+      <obj_property name="Radix">HEXRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_bloque_12/ch_valid" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">ch_valid</obj_property>
+      <obj_property name="ObjectShortName">ch_valid</obj_property>
+   </wvobject>
+</wave_config>

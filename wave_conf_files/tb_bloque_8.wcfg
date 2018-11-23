@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wave_config>
+   <wave_state>
+   </wave_state>
+   <db_ref_list>
+      <db_ref path="/home/ise/wkspc/dvbt-channel-estimation/tb_bloque_8_isim_beh.wdb" id="1" type="auto">
+         <top_modules>
+            <top_module name="image_pkg" />
+            <top_module name="math_real" />
+            <top_module name="mi_paquete" />
+            <top_module name="numeric_std" />
+            <top_module name="std_logic_1164" />
+            <top_module name="std_logic_arith" />
+            <top_module name="std_logic_textio" />
+            <top_module name="tb_bloque_8" />
+            <top_module name="textio" />
+            <top_module name="txt_util" />
+            <top_module name="vhdl_verification" />
+         </top_modules>
+      </db_ref>
+   </db_ref_list>
+   <WVObjectSize size="12" />
+   <wvobject fp_name="/tb_bloque_8/clk" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">clk</obj_property>
+      <obj_property name="ObjectShortName">clk</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_bloque_8/rst" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">rst</obj_property>
+      <obj_property name="ObjectShortName">rst</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_bloque_8/symb_ready" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">symb_ready</obj_property>
+      <obj_property name="ObjectShortName">symb_ready</obj_property>
+      <obj_property name="UseCustomSignalColor">true</obj_property>
+      <obj_property name="CustomSignalColor">#00ff00</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_bloque_8/pilot_ready" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">pilot_ready</obj_property>
+      <obj_property name="ObjectShortName">pilot_ready</obj_property>
+      <obj_property name="UseCustomSignalColor">true</obj_property>
+      <obj_property name="CustomSignalColor">#00ff00</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_bloque_8/addr_pilot" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">addr_pilot[10:0]</obj_property>
+      <obj_property name="ObjectShortName">addr_pilot[10:0]</obj_property>
+      <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+      <obj_property name="UseCustomSignalColor">true</obj_property>
+      <obj_property name="CustomSignalColor">#00ff00</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_bloque_8/data_pilot" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">data_pilot[23:0]</obj_property>
+      <obj_property name="ObjectShortName">data_pilot[23:0]</obj_property>
+      <obj_property name="Radix">HEXRADIX</obj_property>
+      <obj_property name="UseCustomSignalColor">true</obj_property>
+      <obj_property name="CustomSignalColor">#00ff00</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_bloque_8/addr_symb" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">addr_symb[10:0]</obj_property>
+      <obj_property name="ObjectShortName">addr_symb[10:0]</obj_property>
+      <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+      <obj_property name="UseCustomSignalColor">true</obj_property>
+      <obj_property name="CustomSignalColor">#00ff00</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_bloque_8/data_symb" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">data_symb[23:0]</obj_property>
+      <obj_property name="ObjectShortName">data_symb[23:0]</obj_property>
+      <obj_property name="Radix">HEXRADIX</obj_property>
+      <obj_property name="UseCustomSignalColor">true</obj_property>
+      <obj_property name="CustomSignalColor">#00ff00</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_bloque_8/pilot_tx_signed" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">pilot_tx_signed</obj_property>
+      <obj_property name="ObjectShortName">pilot_tx_signed</obj_property>
+      <obj_property name="UseCustomSignalColor">true</obj_property>
+      <obj_property name="CustomSignalColor">#800080</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_bloque_8/pilot_rx" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">pilot_rx</obj_property>
+      <obj_property name="ObjectShortName">pilot_rx</obj_property>
+      <obj_property name="Radix">HEXRADIX</obj_property>
+      <obj_property name="UseCustomSignalColor">true</obj_property>
+      <obj_property name="CustomSignalColor">#800080</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_bloque_8/valid" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">valid</obj_property>
+      <obj_property name="ObjectShortName">valid</obj_property>
+      <obj_property name="UseCustomSignalColor">true</obj_property>
+      <obj_property name="CustomSignalColor">#00ff00</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_bloque_8/pilot_txrx_fin" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">pilot_txrx_fin</obj_property>
+      <obj_property name="ObjectShortName">pilot_txrx_fin</obj_property>
+   </wvobject>
+</wave_config>

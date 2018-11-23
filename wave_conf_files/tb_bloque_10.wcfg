@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wave_config>
+   <wave_state>
+   </wave_state>
+   <db_ref_list>
+      <db_ref path="/home/ise/wkspc/dvbt-channel-estimation/tb_bloque_10_isim_beh1.wdb" id="1" type="auto">
+         <top_modules>
+            <top_module name="math_real" />
+            <top_module name="mi_paquete" />
+            <top_module name="numeric_std" />
+            <top_module name="std_logic_1164" />
+            <top_module name="tb_bloque_10" />
+         </top_modules>
+      </db_ref>
+   </db_ref_list>
+   <WVObjectSize size="8" />
+   <wvobject fp_name="/tb_bloque_10/clk" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">clk</obj_property>
+      <obj_property name="ObjectShortName">clk</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_bloque_10/rst" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">rst</obj_property>
+      <obj_property name="ObjectShortName">rst</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_bloque_10/pilot_eq" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">pilot_eq</obj_property>
+      <obj_property name="ObjectShortName">pilot_eq</obj_property>
+      <obj_property name="Radix">HEXRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_bloque_10/pilot_eq_valid" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">pilot_eq_valid</obj_property>
+      <obj_property name="ObjectShortName">pilot_eq_valid</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_bloque_10/pilot_addr" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">pilot_addr[7:0]</obj_property>
+      <obj_property name="ObjectShortName">pilot_addr[7:0]</obj_property>
+      <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_bloque_10/pilot_data" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">pilot_data[23:0]</obj_property>
+      <obj_property name="ObjectShortName">pilot_data[23:0]</obj_property>
+      <obj_property name="Radix">HEXRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_bloque_10/pilot_write_fin" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">pilot_write_fin</obj_property>
+      <obj_property name="ObjectShortName">pilot_write_fin</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_bloque_10/pilot_data_valid" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">pilot_data_valid</obj_property>
+      <obj_property name="ObjectShortName">pilot_data_valid</obj_property>
+   </wvobject>
+</wave_config>

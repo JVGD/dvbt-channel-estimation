@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wave_config>
+   <wave_state>
+   </wave_state>
+   <db_ref_list>
+      <db_ref path="/home/ise/project_EDC/dvbt-channel-estimation/estimador_verification_isim_beh2.wdb" id="1" type="auto">
+         <top_modules>
+            <top_module name="estimador_verification" />
+            <top_module name="image_pkg" />
+            <top_module name="math_real" />
+            <top_module name="mi_paquete" />
+            <top_module name="numeric_std" />
+            <top_module name="std_logic_1164" />
+            <top_module name="std_logic_arith" />
+            <top_module name="std_logic_textio" />
+            <top_module name="std_logic_unsigned" />
+            <top_module name="textio" />
+            <top_module name="txt_util" />
+            <top_module name="vhdl_verification" />
+         </top_modules>
+      </db_ref>
+   </db_ref_list>
+   <WVObjectSize size="23" />
+   <wvobject fp_name="/estimador_verification/rst" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">rst</obj_property>
+      <obj_property name="ObjectShortName">rst</obj_property>
+   </wvobject>
+   <wvobject fp_name="/estimador_verification/clk" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">clk</obj_property>
+      <obj_property name="ObjectShortName">clk</obj_property>
+   </wvobject>
+   <wvobject fp_name="/estimador_verification/valid_b23" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">valid_b23</obj_property>
+      <obj_property name="ObjectShortName">valid_b23</obj_property>
+   </wvobject>
+   <wvobject fp_name="/estimador_verification/data_b23" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">data_b23[23:0]</obj_property>
+      <obj_property name="ObjectShortName">data_b23[23:0]</obj_property>
+      <obj_property name="Radix">HEXRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/estimador_verification/data_b34" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">data_b34[23:0]</obj_property>
+      <obj_property name="ObjectShortName">data_b34[23:0]</obj_property>
+      <obj_property name="Radix">HEXRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/estimador_verification/addr_b34" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">addr_b34[10:0]</obj_property>
+      <obj_property name="ObjectShortName">addr_b34[10:0]</obj_property>
+      <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/estimador_verification/write_en_b34" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">write_en_b34</obj_property>
+      <obj_property name="ObjectShortName">write_en_b34</obj_property>
+   </wvobject>
+   <wvobject fp_name="/estimador_verification/ready_symb_b38" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">ready_symb_b38</obj_property>
+      <obj_property name="ObjectShortName">ready_symb_b38</obj_property>
+   </wvobject>
+   <wvobject fp_name="/estimador_verification/data_symb_b48" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">data_symb_b48[23:0]</obj_property>
+      <obj_property name="ObjectShortName">data_symb_b48[23:0]</obj_property>
+      <obj_property name="Radix">HEXRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/estimador_verification/addr_symb_b48" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">addr_symb_b48[10:0]</obj_property>
+      <obj_property name="ObjectShortName">addr_symb_b48[10:0]</obj_property>
+      <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/estimador_verification/prbs_b56" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">prbs_b56</obj_property>
+      <obj_property name="ObjectShortName">prbs_b56</obj_property>
+   </wvobject>
+   <wvobject fp_name="/estimador_verification/valid_b56" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">valid_b56</obj_property>
+      <obj_property name="ObjectShortName">valid_b56</obj_property>
+   </wvobject>
+   <wvobject fp_name="/estimador_verification/uut_bloque_5/clk" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">clk</obj_property>
+      <obj_property name="ObjectShortName">clk</obj_property>
+   </wvobject>
+   <wvobject fp_name="/estimador_verification/uut_bloque_5/rst" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">rst</obj_property>
+      <obj_property name="ObjectShortName">rst</obj_property>
+   </wvobject>
+   <wvobject fp_name="/estimador_verification/uut_bloque_5/yout" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">yout</obj_property>
+      <obj_property name="ObjectShortName">yout</obj_property>
+   </wvobject>
+   <wvobject fp_name="/estimador_verification/uut_bloque_5/valid" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">valid</obj_property>
+      <obj_property name="ObjectShortName">valid</obj_property>
+   </wvobject>
+   <wvobject fp_name="/estimador_verification/uut_bloque_5/enable" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">enable</obj_property>
+      <obj_property name="ObjectShortName">enable</obj_property>
+   </wvobject>
+   <wvobject fp_name="/estimador_verification/uut_bloque_5/prbs_reg" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">prbs_reg[10:0]</obj_property>
+      <obj_property name="ObjectShortName">prbs_reg[10:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/estimador_verification/uut_bloque_5/p_prbs_reg" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">p_prbs_reg[10:0]</obj_property>
+      <obj_property name="ObjectShortName">p_prbs_reg[10:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/estimador_verification/uut_bloque_5/s_in" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">s_in</obj_property>
+      <obj_property name="ObjectShortName">s_in</obj_property>
+   </wvobject>
+   <wvobject fp_name="/estimador_verification/uut_bloque_5/p_yout" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">p_yout</obj_property>
+      <obj_property name="ObjectShortName">p_yout</obj_property>
+   </wvobject>
+   <wvobject fp_name="/estimador_verification/uut_bloque_5/syout" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">syout</obj_property>
+      <obj_property name="ObjectShortName">syout</obj_property>
+   </wvobject>
+   <wvobject fp_name="/estimador_verification/uut_bloque_5/p_valid" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">p_valid</obj_property>
+      <obj_property name="ObjectShortName">p_valid</obj_property>
+   </wvobject>
+</wave_config>

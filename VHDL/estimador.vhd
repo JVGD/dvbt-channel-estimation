@@ -4,22 +4,21 @@ use work.mi_paquete.all;
 use ieee.numeric_std.all;
 
 entity estimador is
+
+    port(
+        clk      : in std_logic;
+        rst      : in std_logic;
+        data_in  : in std_logic_vector(23 downto 0);    -- [Re(23,12), Im(11,0)]
+        valid_in : in std_logic;                        -- 1 if data_in is ready
+		ch_est   : out complex12;
+		ch_valid : out std_logic
+        );
+
 end estimador;
 
 architecture behavioral of estimador is
 
-     -- Block for reading data from file
-	 -- and clock generation
-    component bloque_2
-        port(
-            data_b2     : out std_logic_vector(23 downto 0);    -- [Re(23,12), Im(11,0)]
-            valid_b2    : out std_logic;                        -- 1 if data_in is ready
-            clk_b2      : out std_logic;
-            rst_b2      : out std_logic
-            );
-        end component;
- 
-    -- Block for writing the generated data
+    -- Block for writing the data
 	-- into the Dual Port RAM
     component bloque_3
         port(
@@ -50,12 +49,13 @@ architecture behavioral of estimador is
 	
 	-- Block implementing the PRBS
     component bloque_5
-        port(
-            clk   : in std_logic;	--clock
-            rst : in std_logic;	    --reset
-            Yout  : out std_logic;	--randomized output
-            valid : out std_logic
-            );        
+		port(
+			clk   : in std_logic;       --clock
+			rst : in std_logic;         --reset
+			Yout  : out std_logic;      --randomized output
+			valid : out std_logic;
+			enable : in std_logic
+			);     
 		end component; 
  
     -- Block for generating pilots out of the results
@@ -86,7 +86,7 @@ architecture behavioral of estimador is
 			doutb : out  std_logic_vector(23 downto 0)
 			);
 		end component; 
-	
+
     -- When DPRAMs with symbols and pilots are ready
 	-- bloque 8 reads it and return the pilot_rx and 
 	-- pilot_tx, although from pilot_tx it only 
@@ -111,12 +111,12 @@ architecture behavioral of estimador is
 	
 	-- It divides pilot_rx by +/- 4/3 = +/-0.75
 	-- depending on the pilot_signed (pilot_tx sign)
-	-- It returns the equalized pilot pilot_eq
+	-- It returns the estimated pilot pilot_est
 	component bloque_9
 		port(
 			pilot_signed : in std_logic;
 			pilot_rx : in complex12;
-			pilot_eq : out complex12
+			pilot_est : out complex12
 			);
 		end component;
 	
@@ -149,15 +149,55 @@ architecture behavioral of estimador is
 			);
 		end component; 
 
-    
-    -- Signals of synchronism
-    signal rst : std_logic;
-    signal clk : std_logic;
-    
-    -- Signals Block 2 to Block 3
-    signal valid_b23 : std_logic;
-    signal data_b23 : std_logic_vector(23 downto 0);
+	-- It takes pilot superior and inferior from the DPRAM
+	-- and feeds them to the interpolator iteratively
+    component bloque_12
+		port(
+			clk : in std_logic;
+			rst : in std_logic;
+			ram_ready : in std_logic;
+			data : in std_logic_vector(23 downto 0);
+			addr : out std_logic_vector(7 downto 0);
+			pilot_inf : out complex12;
+			pilot_sup : out complex12;
+			valid : out std_logic;
+			interp_ready : in std_logic
+			);
+		end component;
 
+	-- Interpolation of the pilots channel and outputing
+	-- the results of the interpolation, this would be the
+	-- channel estimated, not the channel equalized
+	component interpolador11
+		port(
+			clk         : in std_logic;
+			rst         : in std_logic;
+			finished	: out std_logic;
+			sup         : in complex12;
+			inf         : in complex12;
+			valid       : in std_logic;
+			estim       : out complex12; 
+			estim_valid : out std_logic
+			);
+		end component;
+    
+	-- Block that writes the pilots and the interpolated
+	-- data in order to produce the estimated channel
+	component bloque_14
+		port(
+			clk : in std_logic;
+			rst : in std_logic;
+			pilot_inf : in complex12;
+			pilot_sup : in complex12;
+			pilot_valid : in std_logic;
+			interp_estim : in complex12;
+			interp_valid : in std_logic;
+			interp_fin : in std_logic;
+			ch_est : out complex12;
+			ch_valid : out std_logic
+			);
+		end component;
+		
     -- Signals Block 3 to Block 4
     signal data_b34 : std_logic_vector(23 downto 0);
 	signal addr_b34 : std_logic_vector(10 downto 0);
@@ -195,7 +235,7 @@ architecture behavioral of estimador is
 	signal valid_b810 : std_logic;
 	
 	-- Signal Block 9 to Block 10
-	signal pilot_eq_b910 : complex12;
+	signal pilot_est_b910 : complex12;
 	
 	-- Signal Block 10 to Block 11
 	signal pilot_addr_b1011 : std_logic_vector(7 downto 0);
@@ -209,23 +249,23 @@ architecture behavioral of estimador is
 	signal pilot_addr_b1112 : std_logic_vector(7 downto 0);
 	signal pilot_data_b1112 : std_logic_vector(23 downto 0);
 	
-	-- For test bench
-	signal pilot_eq_teo : complex12 := (re => (others=>'0'), im => (others=>'0'));
+	-- Signal Block 12 to 13 and 14
+	signal pilot_inf_b121314 : complex12;
+	signal pilot_sup_b121314 : complex12;
+	signal valid_b121314 : std_logic;
+	signal interp_fin_b121314 : std_logic;
+	
+	-- Signal Block 13 to 14
+	signal interp_estim_b1314 : complex12;
+	signal interp_valid_b1314 : std_logic;
+	
 
 begin
 	
-    uut_bloque_2 : bloque_2
-        port map(
-            data_b2     => data_b23,
-            valid_b2    => valid_b23,
-            clk_b2      => clk,
-            rst_b2      => rst
-            );
-
-    uut_bloque_3: bloque_3 
+    uut_bloque_3 : bloque_3 
         port map (
-            data_in_b3   => data_b23,
-            valid_in_b3  => valid_b23,
+            data_in_b3   => data_in,
+            valid_in_b3  => valid_in,
             addr_out_b3  => addr_b34,
             data_out_b3  => data_b34,
             write_en_b3  => write_en_b34,
@@ -250,9 +290,10 @@ begin
             clk   => clk,
             rst => rst,
             Yout  => prbs_b56,
-            valid => valid_b56
-			);       
-            
+            valid => valid_b56,
+			enable => valid_in
+			);
+			
 	uut_bloque_6 : bloque_6 
         port map (
             clk_b6  => clk,
@@ -296,14 +337,14 @@ begin
 		port map(
 			pilot_signed => pilot_tx_signed_b89,
 			pilot_rx => pilot_rx_b89,
-			pilot_eq => pilot_eq_b910
+			pilot_est => pilot_est_b910
 			);
 	
 	uut_bloque_10 : bloque_10
 		port map(
 			clk => clk,
 			rst => rst,
-			pilot_eq => pilot_eq_b910,
+			pilot_eq => pilot_est_b910,
 			pilot_eq_valid => valid_b810,
 			pilot_addr => pilot_addr_b1011,
 			pilot_data => pilot_data_b1011,
@@ -322,585 +363,44 @@ begin
 			doutb => pilot_data_b1112
 			);
 			
-	-- stimulus process
-	stim_proc: process
-	begin		
-		-- hold reset state for 100 ns.
-		wait for 34140 ns;
-		pilot_eq_teo.re <= x"019"; -- d"1.562500" b"000000011001"
-		pilot_eq_teo.im <= x"ffa"; -- d"-0.375000" b"111111111010"
-
-		wait for 10 ns;
-		pilot_eq_teo.re <= x"012"; -- d"1.125000" b"000000010010"
-		pilot_eq_teo.im <= x"ff1"; -- d"-0.937500" b"111111110001"
-
-		wait for 10 ns;
-		pilot_eq_teo.re <= x"00b"; -- d"0.687500" b"000000001011"
-		pilot_eq_teo.im <= x"ff4"; -- d"-0.750000" b"111111110100"
-
-		wait for 10 ns;
-		pilot_eq_teo.re <= x"010"; -- d"1.000000" b"000000010000"
-		pilot_eq_teo.im <= x"ff3"; -- d"-0.812500" b"111111110011"
-
-		wait for 10 ns;
-		pilot_eq_teo.re <= x"010"; -- d"1.000000" b"000000010000"
-		pilot_eq_teo.im <= x"fe6"; -- d"-1.625000" b"111111100110"
-
-		wait for 10 ns;
-		pilot_eq_teo.re <= x"006"; -- d"0.375000" b"000000000110"
-		pilot_eq_teo.im <= x"fde"; -- d"-2.125000" b"111111011110"
-
-		wait for 10 ns;
-		pilot_eq_teo.re <= x"ff7"; -- d"-0.562500" b"111111110111"
-		pilot_eq_teo.im <= x"fe3"; -- d"-1.812500" b"111111100011"
-
-		wait for 10 ns;
-		pilot_eq_teo.re <= x"fee"; -- d"-1.125000" b"111111101110"
-		pilot_eq_teo.im <= x"fe9"; -- d"-1.437500" b"111111101001"
-
-		wait for 10 ns;
-		pilot_eq_teo.re <= x"feb"; -- d"-1.312500" b"111111101011"
-		pilot_eq_teo.im <= x"ff1"; -- d"-0.937500" b"111111110001"
-
-		wait for 10 ns;
-		pilot_eq_teo.re <= x"feb"; -- d"-1.312500" b"111111101011"
-		pilot_eq_teo.im <= x"ffe"; -- d"-0.125000" b"111111111110"
-
-		wait for 10 ns;
-		pilot_eq_teo.re <= x"ff2"; -- d"-0.875000" b"111111110010"
-		pilot_eq_teo.im <= x"000"; -- d"0.000000" b"000000000000"
-
-		wait for 10 ns;
-		pilot_eq_teo.re <= x"ff4"; -- d"-0.750000" b"111111110100"
-		pilot_eq_teo.im <= x"ffe"; -- d"-0.125000" b"111111111110"
-
-		wait for 10 ns;
-		pilot_eq_teo.re <= x"fee"; -- d"-1.125000" b"111111101110"
-		pilot_eq_teo.im <= x"002"; -- d"0.125000" b"000000000010"
-
-		wait for 10 ns;
-		pilot_eq_teo.re <= x"ff5"; -- d"-0.687500" b"111111110101"
-		pilot_eq_teo.im <= x"00d"; -- d"0.812500" b"000000001101"
-
-		wait for 10 ns;
-		pilot_eq_teo.re <= x"001"; -- d"0.062500" b"000000000001"
-		pilot_eq_teo.im <= x"00c"; -- d"0.750000" b"000000001100"
-
-		wait for 10 ns;
-		pilot_eq_teo.re <= x"004"; -- d"0.250000" b"000000000100"
-		pilot_eq_teo.im <= x"004"; -- d"0.250000" b"000000000100"
-
-		wait for 10 ns;
-		pilot_eq_teo.re <= x"000"; -- d"0.000000" b"000000000000"
-		pilot_eq_teo.im <= x"fff"; -- d"-0.062500" b"111111111111"
-
-		wait for 10 ns;
-		pilot_eq_teo.re <= x"ffb"; -- d"-0.312500" b"111111111011"
-		pilot_eq_teo.im <= x"ffe"; -- d"-0.125000" b"111111111110"
-
-		wait for 10 ns;
-		pilot_eq_teo.re <= x"ff4"; -- d"-0.750000" b"111111110100"
-		pilot_eq_teo.im <= x"003"; -- d"0.187500" b"000000000011"
-
-		wait for 10 ns;
-		pilot_eq_teo.re <= x"ff4"; -- d"-0.750000" b"111111110100"
-		pilot_eq_teo.im <= x"012"; -- d"1.125000" b"000000010010"
-
-		wait for 10 ns;
-		pilot_eq_teo.re <= x"003"; -- d"0.187500" b"000000000011"
-		pilot_eq_teo.im <= x"01b"; -- d"1.687500" b"000000011011"
-
-		wait for 10 ns;
-		pilot_eq_teo.re <= x"018"; -- d"1.500000" b"000000011000"
-		pilot_eq_teo.im <= x"00f"; -- d"0.937500" b"000000001111"
-
-		wait for 10 ns;
-		pilot_eq_teo.re <= x"015"; -- d"1.312500" b"000000010101"
-		pilot_eq_teo.im <= x"fff"; -- d"-0.062500" b"111111111111"
-
-		wait for 10 ns;
-		pilot_eq_teo.re <= x"00c"; -- d"0.750000" b"000000001100"
-		pilot_eq_teo.im <= x"ff9"; -- d"-0.437500" b"111111111001"
-
-		wait for 10 ns;
-		pilot_eq_teo.re <= x"006"; -- d"0.375000" b"000000000110"
-		pilot_eq_teo.im <= x"ff9"; -- d"-0.437500" b"111111111001"
-
-		wait for 10 ns;
-		pilot_eq_teo.re <= x"002"; -- d"0.125000" b"000000000010"
-		pilot_eq_teo.im <= x"fff"; -- d"-0.062500" b"111111111111"
-
-		wait for 10 ns;
-		pilot_eq_teo.re <= x"004"; -- d"0.250000" b"000000000100"
-		pilot_eq_teo.im <= x"006"; -- d"0.375000" b"000000000110"
-
-		wait for 10 ns;
-		pilot_eq_teo.re <= x"010"; -- d"1.000000" b"000000010000"
-		pilot_eq_teo.im <= x"004"; -- d"0.250000" b"000000000100"
-
-		wait for 10 ns;
-		pilot_eq_teo.re <= x"010"; -- d"1.000000" b"000000010000"
-		pilot_eq_teo.im <= x"ff6"; -- d"-0.625000" b"111111110110"
-
-		wait for 10 ns;
-		pilot_eq_teo.re <= x"006"; -- d"0.375000" b"000000000110"
-		pilot_eq_teo.im <= x"ff3"; -- d"-0.812500" b"111111110011"
-
-		wait for 10 ns;
-		pilot_eq_teo.re <= x"fff"; -- d"-0.062500" b"111111111111"
-		pilot_eq_teo.im <= x"ffa"; -- d"-0.375000" b"111111111010"
-
-		wait for 10 ns;
-		pilot_eq_teo.re <= x"004"; -- d"0.250000" b"000000000100"
-		pilot_eq_teo.im <= x"000"; -- d"0.000000" b"000000000000"
-
-		wait for 10 ns;
-		pilot_eq_teo.re <= x"009"; -- d"0.562500" b"000000001001"
-		pilot_eq_teo.im <= x"ffe"; -- d"-0.125000" b"111111111110"
-
-		wait for 10 ns;
-		pilot_eq_teo.re <= x"00d"; -- d"0.812500" b"000000001101"
-		pilot_eq_teo.im <= x"ffa"; -- d"-0.375000" b"111111111010"
-
-		wait for 10 ns;
-		pilot_eq_teo.re <= x"00c"; -- d"0.750000" b"000000001100"
-		pilot_eq_teo.im <= x"ff4"; -- d"-0.750000" b"111111110100"
-
-		wait for 10 ns;
-		pilot_eq_teo.re <= x"004"; -- d"0.250000" b"000000000100"
-		pilot_eq_teo.im <= x"fed"; -- d"-1.187500" b"111111101101"
-
-		wait for 10 ns;
-		pilot_eq_teo.re <= x"ff7"; -- d"-0.562500" b"111111110111"
-		pilot_eq_teo.im <= x"ff2"; -- d"-0.875000" b"111111110010"
-
-		wait for 10 ns;
-		pilot_eq_teo.re <= x"ff6"; -- d"-0.625000" b"111111110110"
-		pilot_eq_teo.im <= x"000"; -- d"0.000000" b"000000000000"
-
-		wait for 10 ns;
-		pilot_eq_teo.re <= x"001"; -- d"0.062500" b"000000000001"
-		pilot_eq_teo.im <= x"004"; -- d"0.250000" b"000000000100"
-
-		wait for 10 ns;
-		pilot_eq_teo.re <= x"006"; -- d"0.375000" b"000000000110"
-		pilot_eq_teo.im <= x"000"; -- d"0.000000" b"000000000000"
-
-		wait for 10 ns;
-		pilot_eq_teo.re <= x"008"; -- d"0.500000" b"000000001000"
-		pilot_eq_teo.im <= x"ffe"; -- d"-0.125000" b"111111111110"
-
-		wait for 10 ns;
-		pilot_eq_teo.re <= x"00d"; -- d"0.812500" b"000000001101"
-		pilot_eq_teo.im <= x"ffb"; -- d"-0.312500" b"111111111011"
-
-		wait for 10 ns;
-		pilot_eq_teo.re <= x"00e"; -- d"0.875000" b"000000001110"
-		pilot_eq_teo.im <= x"ff2"; -- d"-0.875000" b"111111110010"
-
-		wait for 10 ns;
-		pilot_eq_teo.re <= x"005"; -- d"0.312500" b"000000000101"
-		pilot_eq_teo.im <= x"fee"; -- d"-1.125000" b"111111101110"
-
-		wait for 10 ns;
-		pilot_eq_teo.re <= x"002"; -- d"0.125000" b"000000000010"
-		pilot_eq_teo.im <= x"fee"; -- d"-1.125000" b"111111101110"
-
-		wait for 10 ns;
-		pilot_eq_teo.re <= x"ffe"; -- d"-0.125000" b"111111111110"
-		pilot_eq_teo.im <= x"fea"; -- d"-1.375000" b"111111101010"
-
-		wait for 10 ns;
-		pilot_eq_teo.re <= x"ff2"; -- d"-0.875000" b"111111110010"
-		pilot_eq_teo.im <= x"feb"; -- d"-1.312500" b"111111101011"
-
-		wait for 10 ns;
-		pilot_eq_teo.re <= x"fed"; -- d"-1.187500" b"111111101101"
-		pilot_eq_teo.im <= x"ff8"; -- d"-0.500000" b"111111111000"
-
-		wait for 10 ns;
-		pilot_eq_teo.re <= x"ff5"; -- d"-0.687500" b"111111110101"
-		pilot_eq_teo.im <= x"001"; -- d"0.062500" b"000000000001"
-
-		wait for 10 ns;
-		pilot_eq_teo.re <= x"ffd"; -- d"-0.187500" b"111111111101"
-		pilot_eq_teo.im <= x"ffe"; -- d"-0.125000" b"111111111110"
-
-		wait for 10 ns;
-		pilot_eq_teo.re <= x"ffd"; -- d"-0.187500" b"111111111101"
-		pilot_eq_teo.im <= x"ffb"; -- d"-0.312500" b"111111111011"
-
-		wait for 10 ns;
-		pilot_eq_teo.re <= x"ffe"; -- d"-0.125000" b"111111111110"
-		pilot_eq_teo.im <= x"ffb"; -- d"-0.312500" b"111111111011"
-
-		wait for 10 ns;
-		pilot_eq_teo.re <= x"ffd"; -- d"-0.187500" b"111111111101"
-		pilot_eq_teo.im <= x"ff7"; -- d"-0.562500" b"111111110111"
-
-		wait for 10 ns;
-		pilot_eq_teo.re <= x"ff8"; -- d"-0.500000" b"111111111000"
-		pilot_eq_teo.im <= x"ff9"; -- d"-0.437500" b"111111111001"
-
-		wait for 10 ns;
-		pilot_eq_teo.re <= x"ffa"; -- d"-0.375000" b"111111111010"
-		pilot_eq_teo.im <= x"000"; -- d"0.000000" b"000000000000"
-
-		wait for 10 ns;
-		pilot_eq_teo.re <= x"002"; -- d"0.125000" b"000000000010"
-		pilot_eq_teo.im <= x"ffe"; -- d"-0.125000" b"111111111110"
-
-		wait for 10 ns;
-		pilot_eq_teo.re <= x"001"; -- d"0.062500" b"000000000001"
-		pilot_eq_teo.im <= x"ff4"; -- d"-0.750000" b"111111110100"
-
-		wait for 10 ns;
-		pilot_eq_teo.re <= x"ff6"; -- d"-0.625000" b"111111110110"
-		pilot_eq_teo.im <= x"ff5"; -- d"-0.687500" b"111111110101"
-
-		wait for 10 ns;
-		pilot_eq_teo.re <= x"ff3"; -- d"-0.812500" b"111111110011"
-		pilot_eq_teo.im <= x"ffc"; -- d"-0.250000" b"111111111100"
-
-		wait for 10 ns;
-		pilot_eq_teo.re <= x"ff6"; -- d"-0.625000" b"111111110110"
-		pilot_eq_teo.im <= x"000"; -- d"0.000000" b"000000000000"
-
-		wait for 10 ns;
-		pilot_eq_teo.re <= x"ff9"; -- d"-0.437500" b"111111111001"
-		pilot_eq_teo.im <= x"003"; -- d"0.187500" b"000000000011"
-
-		wait for 10 ns;
-		pilot_eq_teo.re <= x"002"; -- d"0.125000" b"000000000010"
-		pilot_eq_teo.im <= x"004"; -- d"0.250000" b"000000000100"
-
-		wait for 10 ns;
-		pilot_eq_teo.re <= x"007"; -- d"0.437500" b"000000000111"
-		pilot_eq_teo.im <= x"ffa"; -- d"-0.375000" b"111111111010"
-
-		wait for 10 ns;
-		pilot_eq_teo.re <= x"ffc"; -- d"-0.250000" b"111111111100"
-		pilot_eq_teo.im <= x"fee"; -- d"-1.125000" b"111111101110"
-
-		wait for 10 ns;
-		pilot_eq_teo.re <= x"fed"; -- d"-1.187500" b"111111101101"
-		pilot_eq_teo.im <= x"ff3"; -- d"-0.812500" b"111111110011"
-
-		wait for 10 ns;
-		pilot_eq_teo.re <= x"feb"; -- d"-1.312500" b"111111101011"
-		pilot_eq_teo.im <= x"002"; -- d"0.125000" b"000000000010"
-
-		wait for 10 ns;
-		pilot_eq_teo.re <= x"ff0"; -- d"-1.000000" b"111111110000"
-		pilot_eq_teo.im <= x"009"; -- d"0.562500" b"000000001001"
-
-		wait for 10 ns;
-		pilot_eq_teo.re <= x"ff8"; -- d"-0.500000" b"111111111000"
-		pilot_eq_teo.im <= x"00f"; -- d"0.937500" b"000000001111"
-
-		wait for 10 ns;
-		pilot_eq_teo.re <= x"003"; -- d"0.187500" b"000000000011"
-		pilot_eq_teo.im <= x"00f"; -- d"0.937500" b"000000001111"
-
-		wait for 10 ns;
-		pilot_eq_teo.re <= x"00a"; -- d"0.625000" b"000000001010"
-		pilot_eq_teo.im <= x"006"; -- d"0.375000" b"000000000110"
-
-		wait for 10 ns;
-		pilot_eq_teo.re <= x"006"; -- d"0.375000" b"000000000110"
-		pilot_eq_teo.im <= x"ffd"; -- d"-0.187500" b"111111111101"
-
-		wait for 10 ns;
-		pilot_eq_teo.re <= x"000"; -- d"0.000000" b"000000000000"
-		pilot_eq_teo.im <= x"fff"; -- d"-0.062500" b"111111111111"
-
-		wait for 10 ns;
-		pilot_eq_teo.re <= x"003"; -- d"0.187500" b"000000000011"
-		pilot_eq_teo.im <= x"002"; -- d"0.125000" b"000000000010"
-
-		wait for 10 ns;
-		pilot_eq_teo.re <= x"005"; -- d"0.312500" b"000000000101"
-		pilot_eq_teo.im <= x"ffe"; -- d"-0.125000" b"111111111110"
-
-		wait for 10 ns;
-		pilot_eq_teo.re <= x"001"; -- d"0.062500" b"000000000001"
-		pilot_eq_teo.im <= x"ffc"; -- d"-0.250000" b"111111111100"
-
-		wait for 10 ns;
-		pilot_eq_teo.re <= x"002"; -- d"0.125000" b"000000000010"
-		pilot_eq_teo.im <= x"ffe"; -- d"-0.125000" b"111111111110"
-
-		wait for 10 ns;
-		pilot_eq_teo.re <= x"002"; -- d"0.125000" b"000000000010"
-		pilot_eq_teo.im <= x"ffc"; -- d"-0.250000" b"111111111100"
-
-		wait for 10 ns;
-		pilot_eq_teo.re <= x"ffd"; -- d"-0.187500" b"111111111101"
-		pilot_eq_teo.im <= x"ffc"; -- d"-0.250000" b"111111111100"
-
-		wait for 10 ns;
-		pilot_eq_teo.re <= x"ffe"; -- d"-0.125000" b"111111111110"
-		pilot_eq_teo.im <= x"004"; -- d"0.250000" b"000000000100"
-
-		wait for 10 ns;
-		pilot_eq_teo.re <= x"008"; -- d"0.500000" b"000000001000"
-		pilot_eq_teo.im <= x"005"; -- d"0.312500" b"000000000101"
-
-		wait for 10 ns;
-		pilot_eq_teo.re <= x"00d"; -- d"0.812500" b"000000001101"
-		pilot_eq_teo.im <= x"ffd"; -- d"-0.187500" b"111111111101"
-
-		wait for 10 ns;
-		pilot_eq_teo.re <= x"00b"; -- d"0.687500" b"000000001011"
-		pilot_eq_teo.im <= x"ff7"; -- d"-0.562500" b"111111110111"
-
-		wait for 10 ns;
-		pilot_eq_teo.re <= x"00a"; -- d"0.625000" b"000000001010"
-		pilot_eq_teo.im <= x"ff2"; -- d"-0.875000" b"111111110010"
-
-		wait for 10 ns;
-		pilot_eq_teo.re <= x"006"; -- d"0.375000" b"000000000110"
-		pilot_eq_teo.im <= x"fed"; -- d"-1.187500" b"111111101101"
-
-		wait for 10 ns;
-		pilot_eq_teo.re <= x"ff9"; -- d"-0.437500" b"111111111001"
-		pilot_eq_teo.im <= x"fe8"; -- d"-1.500000" b"111111101000"
-
-		wait for 10 ns;
-		pilot_eq_teo.re <= x"ff5"; -- d"-0.687500" b"111111110101"
-		pilot_eq_teo.im <= x"ff3"; -- d"-0.812500" b"111111110011"
-
-		wait for 10 ns;
-		pilot_eq_teo.re <= x"ff7"; -- d"-0.562500" b"111111110111"
-		pilot_eq_teo.im <= x"ff7"; -- d"-0.562500" b"111111110111"
-
-		wait for 10 ns;
-		pilot_eq_teo.re <= x"ff6"; -- d"-0.625000" b"111111110110"
-		pilot_eq_teo.im <= x"ff7"; -- d"-0.562500" b"111111110111"
-
-		wait for 10 ns;
-		pilot_eq_teo.re <= x"ff5"; -- d"-0.687500" b"111111110101"
-		pilot_eq_teo.im <= x"ffc"; -- d"-0.250000" b"111111111100"
-
-		wait for 10 ns;
-		pilot_eq_teo.re <= x"ffb"; -- d"-0.312500" b"111111111011"
-		pilot_eq_teo.im <= x"ffd"; -- d"-0.187500" b"111111111101"
-
-		wait for 10 ns;
-		pilot_eq_teo.re <= x"ffe"; -- d"-0.125000" b"111111111110"
-		pilot_eq_teo.im <= x"ff5"; -- d"-0.687500" b"111111110101"
-
-		wait for 10 ns;
-		pilot_eq_teo.re <= x"ff6"; -- d"-0.625000" b"111111110110"
-		pilot_eq_teo.im <= x"fef"; -- d"-1.062500" b"111111101111"
-
-		wait for 10 ns;
-		pilot_eq_teo.re <= x"fee"; -- d"-1.125000" b"111111101110"
-		pilot_eq_teo.im <= x"ff5"; -- d"-0.687500" b"111111110101"
-
-		wait for 10 ns;
-		pilot_eq_teo.re <= x"fee"; -- d"-1.125000" b"111111101110"
-		pilot_eq_teo.im <= x"ff7"; -- d"-0.562500" b"111111110111"
-
-		wait for 10 ns;
-		pilot_eq_teo.re <= x"fe8"; -- d"-1.500000" b"111111101000"
-		pilot_eq_teo.im <= x"ffc"; -- d"-0.250000" b"111111111100"
-
-		wait for 10 ns;
-		pilot_eq_teo.re <= x"fea"; -- d"-1.375000" b"111111101010"
-		pilot_eq_teo.im <= x"005"; -- d"0.312500" b"000000000101"
-
-		wait for 10 ns;
-		pilot_eq_teo.re <= x"ff3"; -- d"-0.812500" b"111111110011"
-		pilot_eq_teo.im <= x"009"; -- d"0.562500" b"000000001001"
-
-		wait for 10 ns;
-		pilot_eq_teo.re <= x"ff7"; -- d"-0.562500" b"111111110111"
-		pilot_eq_teo.im <= x"004"; -- d"0.250000" b"000000000100"
-
-		wait for 10 ns;
-		pilot_eq_teo.re <= x"ff1"; -- d"-0.937500" b"111111110001"
-		pilot_eq_teo.im <= x"002"; -- d"0.125000" b"000000000010"
-
-		wait for 10 ns;
-		pilot_eq_teo.re <= x"ff1"; -- d"-0.937500" b"111111110001"
-		pilot_eq_teo.im <= x"006"; -- d"0.375000" b"000000000110"
-
-		wait for 10 ns;
-		pilot_eq_teo.re <= x"ff3"; -- d"-0.812500" b"111111110011"
-		pilot_eq_teo.im <= x"008"; -- d"0.500000" b"000000001000"
-
-		wait for 10 ns;
-		pilot_eq_teo.re <= x"ff0"; -- d"-1.000000" b"111111110000"
-		pilot_eq_teo.im <= x"008"; -- d"0.500000" b"000000001000"
-
-		wait for 10 ns;
-		pilot_eq_teo.re <= x"ff1"; -- d"-0.937500" b"111111110001"
-		pilot_eq_teo.im <= x"00c"; -- d"0.750000" b"000000001100"
-
-		wait for 10 ns;
-		pilot_eq_teo.re <= x"ff8"; -- d"-0.500000" b"111111111000"
-		pilot_eq_teo.im <= x"00b"; -- d"0.687500" b"000000001011"
-
-		wait for 10 ns;
-		pilot_eq_teo.re <= x"ff4"; -- d"-0.750000" b"111111110100"
-		pilot_eq_teo.im <= x"009"; -- d"0.562500" b"000000001001"
-
-		wait for 10 ns;
-		pilot_eq_teo.re <= x"fec"; -- d"-1.250000" b"111111101100"
-		pilot_eq_teo.im <= x"010"; -- d"1.000000" b"000000010000"
-
-		wait for 10 ns;
-		pilot_eq_teo.re <= x"fef"; -- d"-1.062500" b"111111101111"
-		pilot_eq_teo.im <= x"01d"; -- d"1.812500" b"000000011101"
-
-		wait for 10 ns;
-		pilot_eq_teo.re <= x"002"; -- d"0.125000" b"000000000010"
-		pilot_eq_teo.im <= x"027"; -- d"2.437500" b"000000100111"
-
-		wait for 10 ns;
-		pilot_eq_teo.re <= x"00f"; -- d"0.937500" b"000000001111"
-		pilot_eq_teo.im <= x"01f"; -- d"1.937500" b"000000011111"
-
-		wait for 10 ns;
-		pilot_eq_teo.re <= x"017"; -- d"1.437500" b"000000010111"
-		pilot_eq_teo.im <= x"01a"; -- d"1.625000" b"000000011010"
-
-		wait for 10 ns;
-		pilot_eq_teo.re <= x"01b"; -- d"1.687500" b"000000011011"
-		pilot_eq_teo.im <= x"006"; -- d"0.375000" b"000000000110"
-
-		wait for 10 ns;
-		pilot_eq_teo.re <= x"015"; -- d"1.312500" b"000000010101"
-		pilot_eq_teo.im <= x"ffb"; -- d"-0.312500" b"111111111011"
-
-		wait for 10 ns;
-		pilot_eq_teo.re <= x"008"; -- d"0.500000" b"000000001000"
-		pilot_eq_teo.im <= x"ffd"; -- d"-0.187500" b"111111111101"
-
-		wait for 10 ns;
-		pilot_eq_teo.re <= x"008"; -- d"0.500000" b"000000001000"
-		pilot_eq_teo.im <= x"007"; -- d"0.437500" b"000000000111"
-
-		wait for 10 ns;
-		pilot_eq_teo.re <= x"010"; -- d"1.000000" b"000000010000"
-		pilot_eq_teo.im <= x"005"; -- d"0.312500" b"000000000101"
-
-		wait for 10 ns;
-		pilot_eq_teo.re <= x"013"; -- d"1.187500" b"000000010011"
-		pilot_eq_teo.im <= x"fff"; -- d"-0.062500" b"111111111111"
-
-		wait for 10 ns;
-		pilot_eq_teo.re <= x"012"; -- d"1.125000" b"000000010010"
-		pilot_eq_teo.im <= x"ffd"; -- d"-0.187500" b"111111111101"
-
-		wait for 10 ns;
-		pilot_eq_teo.re <= x"011"; -- d"1.062500" b"000000010001"
-		pilot_eq_teo.im <= x"ff5"; -- d"-0.687500" b"111111110101"
-
-		wait for 10 ns;
-		pilot_eq_teo.re <= x"00a"; -- d"0.625000" b"000000001010"
-		pilot_eq_teo.im <= x"fef"; -- d"-1.062500" b"111111101111"
-
-		wait for 10 ns;
-		pilot_eq_teo.re <= x"005"; -- d"0.312500" b"000000000101"
-		pilot_eq_teo.im <= x"ff5"; -- d"-0.687500" b"111111110101"
-
-		wait for 10 ns;
-		pilot_eq_teo.re <= x"009"; -- d"0.562500" b"000000001001"
-		pilot_eq_teo.im <= x"ff6"; -- d"-0.625000" b"111111110110"
-
-		wait for 10 ns;
-		pilot_eq_teo.re <= x"00b"; -- d"0.687500" b"000000001011"
-		pilot_eq_teo.im <= x"fee"; -- d"-1.125000" b"111111101110"
-
-		wait for 10 ns;
-		pilot_eq_teo.re <= x"ffe"; -- d"-0.125000" b"111111111110"
-		pilot_eq_teo.im <= x"fe5"; -- d"-1.687500" b"111111100101"
-
-		wait for 10 ns;
-		pilot_eq_teo.re <= x"ff6"; -- d"-0.625000" b"111111110110"
-		pilot_eq_teo.im <= x"fed"; -- d"-1.187500" b"111111101101"
-
-		wait for 10 ns;
-		pilot_eq_teo.re <= x"ff2"; -- d"-0.875000" b"111111110010"
-		pilot_eq_teo.im <= x"ff3"; -- d"-0.812500" b"111111110011"
-
-		wait for 10 ns;
-		pilot_eq_teo.re <= x"ff0"; -- d"-1.000000" b"111111110000"
-		pilot_eq_teo.im <= x"ff7"; -- d"-0.562500" b"111111110111"
-
-		wait for 10 ns;
-		pilot_eq_teo.re <= x"ff0"; -- d"-1.000000" b"111111110000"
-		pilot_eq_teo.im <= x"ffe"; -- d"-0.125000" b"111111111110"
-
-		wait for 10 ns;
-		pilot_eq_teo.re <= x"ff7"; -- d"-0.562500" b"111111110111"
-		pilot_eq_teo.im <= x"000"; -- d"0.000000" b"000000000000"
-
-		wait for 10 ns;
-		pilot_eq_teo.re <= x"ff8"; -- d"-0.500000" b"111111111000"
-		pilot_eq_teo.im <= x"ffc"; -- d"-0.250000" b"111111111100"
-
-		wait for 10 ns;
-		pilot_eq_teo.re <= x"ff0"; -- d"-1.000000" b"111111110000"
-		pilot_eq_teo.im <= x"ffc"; -- d"-0.250000" b"111111111100"
-
-		wait for 10 ns;
-		pilot_eq_teo.re <= x"ff1"; -- d"-0.937500" b"111111110001"
-		pilot_eq_teo.im <= x"005"; -- d"0.312500" b"000000000101"
-
-		wait for 10 ns;
-		pilot_eq_teo.re <= x"ff7"; -- d"-0.562500" b"111111110111"
-		pilot_eq_teo.im <= x"003"; -- d"0.187500" b"000000000011"
-
-		wait for 10 ns;
-		pilot_eq_teo.re <= x"ff3"; -- d"-0.812500" b"111111110011"
-		pilot_eq_teo.im <= x"002"; -- d"0.125000" b"000000000010"
-
-		wait for 10 ns;
-		pilot_eq_teo.re <= x"fec"; -- d"-1.250000" b"111111101100"
-		pilot_eq_teo.im <= x"008"; -- d"0.500000" b"000000001000"
-
-		wait for 10 ns;
-		pilot_eq_teo.re <= x"ff1"; -- d"-0.937500" b"111111110001"
-		pilot_eq_teo.im <= x"00f"; -- d"0.937500" b"000000001111"
-
-		wait for 10 ns;
-		pilot_eq_teo.re <= x"ff6"; -- d"-0.625000" b"111111110110"
-		pilot_eq_teo.im <= x"019"; -- d"1.562500" b"000000011001"
-
-		wait for 10 ns;
-		pilot_eq_teo.re <= x"002"; -- d"0.125000" b"000000000010"
-		pilot_eq_teo.im <= x"01e"; -- d"1.875000" b"000000011110"
-
-		wait for 10 ns;
-		pilot_eq_teo.re <= x"011"; -- d"1.062500" b"000000010001"
-		pilot_eq_teo.im <= x"01a"; -- d"1.625000" b"000000011010"
-
-		wait for 10 ns;
-		pilot_eq_teo.re <= x"017"; -- d"1.437500" b"000000010111"
-		pilot_eq_teo.im <= x"00a"; -- d"0.625000" b"000000001010"
-
-		wait for 10 ns;
-		pilot_eq_teo.re <= x"00e"; -- d"0.875000" b"000000001110"
-		pilot_eq_teo.im <= x"ffa"; -- d"-0.375000" b"111111111010"
-
-		wait for 10 ns;
-		pilot_eq_teo.re <= x"001"; -- d"0.062500" b"000000000001"
-		pilot_eq_teo.im <= x"ffd"; -- d"-0.187500" b"111111111101"
-
-		wait for 10 ns;
-		pilot_eq_teo.re <= x"001"; -- d"0.062500" b"000000000001"
-		pilot_eq_teo.im <= x"006"; -- d"0.375000" b"000000000110"
-
-		wait for 10 ns;
-		pilot_eq_teo.re <= x"005"; -- d"0.312500" b"000000000101"
-		pilot_eq_teo.im <= x"008"; -- d"0.500000" b"000000001000"
-		
-		wait;
-	end process;			
-
+	uut_bloque_12: bloque_12 
+		port map (
+			clk => clk,
+			rst => rst,
+			ram_ready => pilot_write_fin_b1012,
+			data => pilot_data_b1112,
+			addr => pilot_addr_b1112,
+			pilot_inf => pilot_inf_b121314,
+			pilot_sup => pilot_sup_b121314,
+			valid => valid_b121314,
+			interp_ready => interp_fin_b121314
+			);
+			
+	uut_bloque_13 : interpolador11 
+		port map (
+			clk => clk,
+			rst => rst,
+			finished => interp_fin_b121314,
+			sup => pilot_sup_b121314,
+			inf => pilot_inf_b121314,
+			valid => valid_b121314,
+			estim => interp_estim_b1314,
+			estim_valid => interp_valid_b1314
+			);	
+			
+	uut_bloque_14 : bloque_14
+		port map(
+			clk => clk,
+			rst => rst,
+			pilot_inf => pilot_inf_b121314,
+			pilot_sup => pilot_sup_b121314,
+			pilot_valid => valid_b121314,
+			interp_estim => interp_estim_b1314,
+			interp_valid => interp_valid_b1314,
+			interp_fin => interp_fin_b121314,
+			ch_est => ch_est,
+			ch_valid => ch_valid
+			);
 
 end behavioral;
 

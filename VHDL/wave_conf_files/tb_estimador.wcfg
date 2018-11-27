@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wave_config>
+   <wave_state>
+   </wave_state>
+   <db_ref_list>
+      <db_ref path="/home/javier/wkspc/repos/dvbt-channel-estimation/VHDL/tb_estimador_isim_beh.wdb" id="1" type="auto">
+         <top_modules>
+            <top_module name="image_pkg" />
+            <top_module name="math_real" />
+            <top_module name="mi_paquete" />
+            <top_module name="numeric_std" />
+            <top_module name="std_logic_1164" />
+            <top_module name="std_logic_arith" />
+            <top_module name="std_logic_textio" />
+            <top_module name="std_logic_unsigned" />
+            <top_module name="tb_estimador" />
+            <top_module name="textio" />
+            <top_module name="txt_util" />
+            <top_module name="vhdl_verification" />
+         </top_modules>
+      </db_ref>
+   </db_ref_list>
+   <WVObjectSize size="6" />
+   <wvobject fp_name="/tb_estimador/clk" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">clk</obj_property>
+      <obj_property name="ObjectShortName">clk</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_estimador/rst" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">rst</obj_property>
+      <obj_property name="ObjectShortName">rst</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_estimador/ofdm_symbol" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">ofdm_symbol[23:0]</obj_property>
+      <obj_property name="ObjectShortName">ofdm_symbol[23:0]</obj_property>
+      <obj_property name="Radix">HEXRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_estimador/valid_in" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">valid_in</obj_property>
+      <obj_property name="ObjectShortName">valid_in</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_estimador/ch_est" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">ch_est</obj_property>
+      <obj_property name="ObjectShortName">ch_est</obj_property>
+      <obj_property name="Radix">HEXRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_estimador/ch_valid" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">ch_valid</obj_property>
+      <obj_property name="ObjectShortName">ch_valid</obj_property>
+   </wvobject>
+</wave_config>

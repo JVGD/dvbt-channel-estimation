@@ -5,10 +5,10 @@ use ieee.std_logic_1164.all;
 -- arithmetic functions with signed or unsigned values
 --use ieee.numeric_std.all;
  
-entity tb_bloque_6 is
-end tb_bloque_6;
+entity tb_bloque_06 is
+end tb_bloque_06;
  
-architecture behavior of tb_bloque_6 is 
+architecture behavior of tb_bloque_06 is 
  
     -- component declaration for the unit under test (uut)
     component bloque_6

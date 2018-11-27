@@ -3,10 +3,10 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 use work.mi_paquete.all;
  
-entity tb_bloque_9 is
-end tb_bloque_9 ;
+entity tb_bloque_09 is
+end tb_bloque_09;
  
-architecture behavior of tb_bloque_9  is 
+architecture behavior of tb_bloque_09 is 
  
     -- component declaration for the unit under test (uut)
  

@@ -1,10 +1,10 @@
 library ieee;
 use ieee.std_logic_1164.all;
 
-entity tb_bloque_5 is
-end tb_bloque_5;
+entity tb_bloque_05 is
+end tb_bloque_05;
 
-architecture tb_bloque_5_1 of tb_bloque_5 is
+architecture behavior of tb_bloque_05 is
 
     -- Declaramos componente
     component bloque_5
@@ -114,4 +114,4 @@ begin
 		wait;
 	end process;
 
-end tb_bloque_5_1;
+end behavior;

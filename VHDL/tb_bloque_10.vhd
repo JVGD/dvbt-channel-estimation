@@ -8,7 +8,7 @@ use work.mi_paquete.all;
 entity tb_bloque_10 is
 end tb_bloque_10;
 
-architecture behavioral of tb_bloque_10 is
+architecture behavior of tb_bloque_10 is
 
     -- clkmanager component
     component clkmanager is
@@ -809,4 +809,4 @@ begin
 		wait;
 	end process;
 	
-end behavioral;
+end behavior;

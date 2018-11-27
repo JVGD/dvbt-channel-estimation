@@ -3,10 +3,10 @@ use ieee.std_logic_1164.all;
 use work.mi_paquete.all;
 use ieee.numeric_std.all;
 
-entity interpolador11_tb is
-end interpolador11_tb;
+entity tb_bloque_13 is
+end tb_bloque_13;
 
-architecture behavior of interpolador11_tb is 
+architecture behavior of tb_bloque_13 is 
 
 	-- component declaration for the unit under test (uut)
 

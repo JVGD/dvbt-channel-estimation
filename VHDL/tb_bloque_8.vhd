@@ -5,10 +5,10 @@ use ieee.math_real.all;
 use work.mi_paquete.all;
 use work.vhdl_verification.all;
 
-entity tb_bloque_8 is
-end tb_bloque_8;
+entity tb_bloque_08 is
+end tb_bloque_08;
  
-architecture behavior of tb_bloque_8 is 
+architecture behavior of tb_bloque_08 is 
  
     -- component declaration for the unit under test (uut)
      -- component declaration

@@ -305,7 +305,7 @@ begin
 			SIMULATION_LABEL => "datawrite",            --! Allow to separate messages from different instances in SIMULATION
 			VERBOSE => false,                          	--! Print more internal details
 			DEBUG => false,                          	--! Print debug info (developers only)        
-			OUTPUT_FILE => "verification/bloque_2_rx_symb.txt",    --! File where data will be stored
+			OUTPUT_FILE => "../verificacion/ficheros_VHDL/bloque_2_rx_symb.txt",    --! File where data will be stored
 			OUTPUT_NIBBLES => 6,                        --! Hex chars on each output line 
 			DATA_WIDTH => 24                            --! Width of input data
 			)
@@ -333,7 +333,7 @@ begin
 			SIMULATION_LABEL => "datawrite",            --! Allow to separate messages from different instances in SIMULATION
 			VERBOSE => false,                          	--! Print more internal details
 			DEBUG => false,                          	--! Print debug info (developers only)        
-			OUTPUT_FILE => "verification/bloque_3_rx_symb.txt",    --! File where data will be stored
+			OUTPUT_FILE => "../verificacion/ficheros_VHDL/bloque_3_rx_symb.txt",    --! File where data will be stored
 			OUTPUT_NIBBLES => 6,                        --! Hex chars on each output line 
 			DATA_WIDTH => 24                            --! Width of input data
 			)
@@ -369,7 +369,7 @@ begin
 			SIMULATION_LABEL => "datawrite",            --! Allow to separate messages from different instances in SIMULATION
 			VERBOSE => false,                          	--! Print more internal details
 			DEBUG => false,                          	--! Print debug info (developers only)        
-			OUTPUT_FILE => "verification/bloque_5_prbs.txt", --! File where data will be stored
+			OUTPUT_FILE => "../verificacion/ficheros_VHDL/bloque_5_prbs.txt", --! File where data will be stored
 			OUTPUT_NIBBLES => 1,                        --! Hex chars on each output line 
 			DATA_WIDTH => 4                            --! Width of input data
 			)
@@ -408,7 +408,7 @@ begin
 			SIMULATION_LABEL => "datawrite",            --! Allow to separate messages from different instances in SIMULATION
 			VERBOSE => false,                          	--! Print more internal details
 			DEBUG => false,                          	--! Print debug info (developers only)        
-			OUTPUT_FILE => "verification/bloque_8_tx_pilots.txt",    --! File where data will be stored
+			OUTPUT_FILE => "../verificacion/ficheros_VHDL/bloque_8_tx_pilots.txt",    --! File where data will be stored
 			OUTPUT_NIBBLES => 6,                        --! Hex chars on each output line 
 			DATA_WIDTH => 24                            --! Width of input data
 			)
@@ -424,7 +424,7 @@ begin
 			SIMULATION_LABEL => "datawrite",            --! Allow to separate messages from different instances in SIMULATION
 			VERBOSE => false,                          	--! Print more internal details
 			DEBUG => false,                          	--! Print debug info (developers only)        
-			OUTPUT_FILE => "verification/bloque_8_rx_pilots.txt",    --! File where data will be stored
+			OUTPUT_FILE => "../verificacion/ficheros_VHDL/bloque_8_rx_pilots.txt",    --! File where data will be stored
 			OUTPUT_NIBBLES => 6,                        --! Hex chars on each output line 
 			DATA_WIDTH => 24                            --! Width of input data
 			)
@@ -463,7 +463,7 @@ begin
 			SIMULATION_LABEL => "datawrite",            --! Allow to separate messages from different instances in SIMULATION
 			VERBOSE => false,                          	--! Print more internal details
 			DEBUG => false,                          	--! Print debug info (developers only)        
-			OUTPUT_FILE => "verification/bloque_9_pilots_est.txt",    --! File where data will be stored
+			OUTPUT_FILE => "../verificacion/ficheros_VHDL/bloque_9_pilots_est.txt",    --! File where data will be stored
 			OUTPUT_NIBBLES => 6,                        --! Hex chars on each output line 
 			DATA_WIDTH => 24                            --! Width of input data
 			)
@@ -541,7 +541,7 @@ begin
 			SIMULATION_LABEL => "datawrite",            --! Allow to separate messages from different instances in SIMULATION
 			VERBOSE => false,                          	--! Print more internal details
 			DEBUG => false,                          	--! Print debug info (developers only)        
-			OUTPUT_FILE => "verification/bloque_14_ch_est.txt",    --! File where data will be stored
+			OUTPUT_FILE => "../verificacion/ficheros_VHDL/bloque_14_ch_est.txt",    --! File where data will be stored
 			OUTPUT_NIBBLES => 6,                        --! Hex chars on each output line 
 			DATA_WIDTH => 24                            --! Width of input data
 			)

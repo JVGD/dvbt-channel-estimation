@@ -42,19 +42,23 @@ clear all; close all; clc;
                         % con b0,b1 los bits a tx
             M = 2;      % Bits por símbolo
             potencia_norm = sqrt(2);
+                        % Vector del 0 al numero en el plano complejo
+                        % hipotenusa de 0 a Re = 1, Im = 1i => Z=1+1i
     end
 
     if isreal(C)
-        C = complex(C);
+        C = complex(C); % Para propositos de representacion
     end
 
     %% Generación bits en vector columna
     % Generamos solo los bits de datos (los pilotos se insertan luego)
+    % Se tiene en cuenta que en QPSK son M=2 bit por simbolo y en BPSK
+    % son solo M=1 bit por simbolo
     numbits_data = NUM_SYMB * Ldata * M;
     bits_tx = rand(numbits_data, 1);
     bits_tx = bits_tx > 0.5;
                         % Al ejecutar la comparación devuelve un 0
-                        % si falso o 1 si verdadero ==> bits                  
+                        % si falso o 1 si verdadero => bits                  
 
     %% PRBS - Generación de secuencia aleatoria
     prbs_end = NUM_SYMB * Lsimb;
@@ -62,7 +66,7 @@ clear all; close all; clc;
     prbs = zeros(1, prbs_end);
 
     for k=1:prbs_end
-        in = xor( prbs_reg(9), prbs_reg(end));
+        in = xor( prbs_reg(9), prbs_reg(end) );
         out = prbs_reg(end);
         prbs_reg = [in prbs_reg(1:end-1)];       % Shift por concatenación
         prbs(k) = out;
@@ -72,45 +76,53 @@ clear all; close all; clc;
     % Consideramos solo la salida del prbs para las posiciones de los 
     % pilotos, matriz cuyas columnas son simbolos y luego tan solo los
     % pilotos del simbolo
-    pilots = reshape(prbs, Lsimb, NUM_SYMB);
+    pilots = reshape(prbs, Lsimb, NUM_SYMB); 
+                        % Matriz [Lsim x N_SYMB] = [1705 x 3]
     pilots = pilots(1:12:1705, :);
-    
-    % Configuramos su potencia
+                        % Matriz [Lpilot x N_SYMB] = [143 x 3]
+                        
+    % Configuramos potencia de pilotos de acuerdo al estandar
     pilots = (pilots > 0) * (-4/3) + (pilots == 0) * 4/3;
-    pilots = complex(pilots);
+    pilots = complex(pilots);   % Para propositos de representacion
 
 
     %% Pasamos los bits al símbolo
     % Se podría hacer con un for pero lo hacemos
     % matricialmente por velocidad
     aux = reshape(bits_tx, M, []).';
-                        % Cambia la matrix bitx1 a una matrix 2xN/2
-                        % la trasponemos luego para tener en columna
-                        % reshape va rellenando por columnas!!
-                        % NO ES LO MISMO A' que A.' uno es traspuesta
-                        % y otro es la transpuesta conjugada
-                        % poner [] es como dejar argumento en blanco
-                        % matlab calcula el num de columnas para que
-                        % esto sea coherente
+                        % Matrix = [Ldata*NSYMB x M]
+                        % Matriz auxiliar que ordena en cada fila
+                        % los bits por simbolo de la constelacion
+                        % si BPSK M=1 bit/symb si QPSK M=4 bit/symb
 
     symb = zeros(size(aux,1),1);
-                        % Vector columna de zeros de aux filas y 1 col
+                        % Vector de simbolos de la constelacion
+                        
     for k = 1:M
         symb = symb + (2^(k-1))*aux(:,k);
+                        % Pasa los bits de aux a decimal:
+                        % BPSK: [0,1]
+                        % QPSK: [0,1,2,3]
+                        % El "+" esta porque lo hace iterativamente 
+                        % primero convierte el bit en posicion 1 (2^0) 
+                        % y luego el 2 (2^1)
     end
-                        % Ahora symb son los bits pasados a decimal
 
     %% Mapeador
     tx_constel_data = C(symb + 1);
-                        % Esto devuelve el valor de C para cada symb
-                        % es como si fuera un for
+                        % Aprovechando la manera en la que esta ordanado 
+                        % el vector C, es simbolo de la constelacion es
+                        % constel: C(i) donde i= bitToDecimal(b0,b1) + 1
+                        % El +1 es porque MATLAB empieza en 1 el indice
+
     if isreal(tx_constel_data)
         tx_constel_data = complex(tx_constel_data);
+                        % Para propositos de representacion
     end
 
     %% Normalizamos en potencia
     % BPSK - No hace falta, potencia es 1
-    % QPSK - Normalizamos entre raiz de 2
+    % QPSK - Normalizamos entre raiz de 2 (modulo de 1+1j)
     tx_constel_data = tx_constel_data / potencia_norm;
 
     %% Dibujamos los simbolos
@@ -118,13 +130,13 @@ clear all; close all; clc;
     % machacados sobre si mismos
 
     figure;
-    plot(tx_constel_data, 'or');      % Si vector es entero numero complejos plot
+    plot(tx_constel_data, 'or');      
+                        % Si vector es entero numero complejos plot
                         % los pinta en eje Re e Im, si C es real le
                         % añadimos una Im = 0 para que no de error
     grid;
     axis([-1.5 1.5 -1.5 1.5]);
-                        % axis([Xmin Xmax Ymin Ymax]);
-    title('Constelacion');
+    title('Constelacion (normalizado en potencia)');
     xlabel('Re');
     ylabel('Im');
 
@@ -133,14 +145,15 @@ clear all; close all; clc;
     simbols = zeros(Lsimb, NUM_SYMB);
     
     % Transformamos los datos de entrada para, cada columna los datos
-    % pertenecientes a un simbolo
+    % pertenecientes a un simbolo data: [Ldata x NUM_SYMB]
     data = reshape(tx_constel_data, Ldata, NUM_SYMB);
 
-    % Insertando pilotos
+    % Insertando pilotos en posiciones fijas para cada simbolo
     simbols(1:12:1705,:) = pilots;
     
-    % Hallando posiciones de datos
-    mask_vect = ones(Lsimb,1);          % Vector 1x1705 que tendra 1
+    % Hallando posiciones de datos 
+    % usando una mascara
+    mask_vect = ones(Lsimb,1);          % Mascara 1x1705 que tendra 1
     mask_vect(1:12:1705) = 0;           % en las posiciones de datos y
     data_index = mask_vect == 1;        % 0 en la de los pilotos
     
@@ -154,6 +167,9 @@ clear all; close all; clc;
                                 
 
     %% Creación símbolos OFDM en frecuencia
+    % Metemos las portadoras de informacion en medio
+    % del simbolo OFDM en frecuencia dejando las portadoras
+    % de los extremos a 0
     ofdm_freq = zeros(NFFT, NUM_SYMB);
     ofdm_freq(ceil((NFFT-Lsimb)/2)+(1:Lsimb),:) = simbols;
 
@@ -187,6 +203,7 @@ clear all; close all; clc;
 
     %% Configuramos la transmisión
     % Se ponen todos los bits uno detras de otro en orden
+    % Esto serializa por columnas a vector columna
     tx = ofdm_time(:);
 
     %% Dibujamos
@@ -213,30 +230,34 @@ clear all; close all; clc;
 %% Canal
     
     %% Canal p1 dvbt
-    % parametros
-    % relative power
+    % Parametros
+    % Potencia relativa
     rho = [0.057662, 0.176809, 0.407163,0.303585,0.258782,0.061831,0.150340,0.051534,0.185074,0.400967,0.295723,0.350825,0.262909,0.225894,0.170996,0.149723,0.240140,0.116587,0.221155,0.259730];
 
-    % delay in us
+    % Retraso en us
     tau = [1.003019,5.422091,0.518650,2.751772,0.602895,1.016585,0.143556,0.153832,3.324866,1.935570,0.429948,3.228872,0.848831,0.073883,0.203952,0.194207,0.924450,1.381320,0.640512,1.368671];
     tau = tau .* 10^(-6);
 
-    % phase in rads
+    % Fase en rads
     theta = [4.855121,3.419109,5.864470,2.215894,3.758058,5.430202,3.952093,1.093586,5.775198,0.154459,5.928383,3.053023,0.628578,2.128544,1.099463,3.462951,3.664773,2.833799,3.334290,0.393889];
     
-    Ts = 224e-6;
-    Afc = 1/Ts;
-    f = (0:NFFT-1)*Afc;
-    f = f-NFFT*Afc/2;
+    % Calculo de la respuesta frecuencial del canal ya que debido
+    % a los parametros dados es mas facil calcular la respuesta frec
+    % y antitransformar
+    Ts = 224e-6;            % Calculo de la f discreta en funcion de Tx
+    Afc = 1/Ts;             % Resolucion maxima de frecuencias
+    f = (0:NFFT-1)*Afc;     % Vector de frecuencias discretas
+    f = f-NFFT*Afc/2;       % Vector de frecuencias discretas y negativas
 
-    % Generating the freq spectrum
+    % Generado el espectro de frecuencias
     H = zeros(1,2048);
 
+    % Formula de acuerdo al estandar del canal P2
     for k = 1:20
         H = H + (rho(k) * exp(-1i*theta(k)) * exp(-1i*2*pi*f*tau(k)));
     end
     
-    % De freq a tiempo
+    % Antitransformando para obtener respuesta temporal
     % como H definida con f negativas
     % se hace ifftshift ante de antitransfromar
     h = ifft(ifftshift(H,2));
@@ -253,17 +274,22 @@ clear all; close all; clc;
 
     %% Ruido
     noise = (randn(size(tx))+ 1i * randn(size(tx))) / sqrt(2);
-                          % Dividimos entre raiz de dos para normalizar la
-                          % potencia
-    Ps = mean (tx.*conj(tx));
-    nsr = 10^(-SNR/10);
+                            % Dividimos entre raiz de dos para normalizar
+                            % la potencia del ruido complejo
+    
+    Ps = mean(tx.*conj(tx));    
+                            % Calcular la potencia de una señal con media
+                            % cero es como calcular la variaza de la misma
+                            % Var = E((X-mean(x))^2) = E(X*X')
+    
+	nsr = 10^(-SNR/10);     % snr[u.n.] de SNR[dB]
     noise = sqrt(Ps * nsr) .* noise;
     
-    
-    % Metiendo el ruido
+    % Metiendo el ruido aditivo (+)
     rx = tx + noise;
 
-    % Metemos el fading 
+    % Metemos el fading (conv) y quitando
+    % las muestras de sobra de la convolucion
     rx = conv(h,rx);
     rx = rx(1:size(tx));
     

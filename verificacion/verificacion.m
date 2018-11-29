@@ -6,6 +6,7 @@ close all;
 
 % Abriendo datos de simulacion MATLAB desde workspace guardado
 load('ficheros_MATLAB/H_est_wkspc.mat');
+H_real = H_real.';  % A vector columna
 
 % Abriendo datos desde fichero VHDL
 file_name = 'ficheros_VHDL/bloque_14_ch_est.txt';
@@ -50,7 +51,7 @@ ylabel('dB');
 
 figure;
 plot(f_est, H_est_vhdl_dB, 'g', f_est, H_est_dB, 'r');
-title('Canal real H(f) VS Canal estimado MATLAB H_e_s_t(f)');
+title('Canal estimado VDHL H_V_H_D_L(f) VS Canal estimado MATLAB H_e_s_t(f)');
 legend('|H_e_s_t(f)|','|H(f)|'); 
 xlabel('f[MHz]');
 ylabel('dB');
@@ -63,9 +64,15 @@ xlabel('f[MHz]');
 ylabel('dB');
 
 % Calculo de error cuadratico medio
-mse_vhdl_matlab = mse(H_est_vhdl, H_est);
-mse_vhdl_real = mse(H_est_vhdl, H_real);
-mse_matlab_real = mse(H_est, H_real);
+H_est_mod      = abs(H_est);
+H_real_mod     = abs(H_real);
+H_est_vhdl_mod = abs(H_est_vhdl);
+
+
+mse_vhdl_matlab = mse(H_est_mod, H_est_vhdl_mod);
+mse_vhdl_real   = mse(H_real_mod, H_est_vhdl_mod);
+mse_matlab_real = mse(H_real_mod ,H_est_mod );
+
 
 fprintf('MSE(H_est_vhdl, H_est_matlab) \t = %f \n', mse_vhdl_matlab);
 fprintf('MSE(H_est_vhdl, H_real) \t = %f \n', mse_vhdl_real);

@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <report-views version="2.0" >
  <header>
-  <DateModified>2018-11-27T18:31:20</DateModified>
+  <DateModified>2018-11-29T19:29:12</DateModified>
   <ModuleName>estimador</ModuleName>
   <SummaryTimeStamp>Unknown</SummaryTimeStamp>
   <SavedFilePath>/home/javier/wkspc/repos/dvbt-channel-estimation/VHDL/iseconfig/estimador.xreport</SavedFilePath>

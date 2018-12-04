@@ -52,7 +52,7 @@ ylabel('dB');
 figure;
 plot(f_est, H_est_vhdl_dB, 'g', f_est, H_est_dB, 'r');
 title('Canal estimado VDHL H_V_H_D_L(f) VS Canal estimado MATLAB H_e_s_t(f)');
-legend('|H_e_s_t(f)|','|H(f)|'); 
+legend('|H_V_H_D_L(f)|','|H_e_s_t(f)|'); 
 xlabel('f[MHz]');
 ylabel('dB');
 
@@ -73,8 +73,33 @@ mse_vhdl_matlab = mse(H_est_mod, H_est_vhdl_mod);
 mse_vhdl_real   = mse(H_real_mod, H_est_vhdl_mod);
 mse_matlab_real = mse(H_real_mod ,H_est_mod );
 
-
+fprintf('\nError Cuadratico Medio\n');
 fprintf('MSE(H_est_vhdl, H_est_matlab) \t = %f \n', mse_vhdl_matlab);
 fprintf('MSE(H_est_vhdl, H_real) \t = %f \n', mse_vhdl_real);
 fprintf('MSE(H_est_matlab, H_real) \t = %f \n', mse_matlab_real);
+
+% Calculo del error en valor absoluto
+H_real_re = real(H_real);
+H_real_im = imag(H_real);
+H_vhdl_re = real(H_est_vhdl);
+H_vhdl_im = imag(H_est_vhdl);
+H_matlab_re = real(H_est);
+H_matlab_im = imag(H_est);
+
+
+error_real = mean( abs(H_real_re - H_vhdl_re) );
+error_imag = mean( abs(H_real_im - H_vhdl_im) );
+
+fprintf('\nError Absoluto parte real e imaginaria\n');
+fprintf('Error(H_real, H_vhdl)  :  real = %f,  imag = %f \n', error_real,error_imag );
+
+error_real = mean( abs(H_real_re - H_matlab_re) );
+error_imag = mean( abs(H_real_im - H_matlab_im) );
+
+fprintf('Error(H_real, H_matlab):  real = %f,  imag = %f \n', error_real,error_imag );
+
+error_real = mean( abs(H_vhdl_re - H_matlab_re) );
+error_imag = mean( abs(H_vhdl_im - H_matlab_im) );
+
+fprintf('Error(H_vhdl, H_matlab):  real = %f,  imag = %f \n', error_real,error_imag );
 
